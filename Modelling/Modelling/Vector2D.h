@@ -10,6 +10,7 @@ class Vector2D
     Vector2D GetOrthogonal() const;
     
     double Length() const;
+    double Length2() const;
     
     double& X();
     double& Y();

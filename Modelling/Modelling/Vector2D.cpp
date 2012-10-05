@@ -34,6 +34,13 @@ double Vector2D::Length() const
 
 //-------------------------------------
 
+double Vector2D::Length2() const
+  {
+  return (*this)*(*this);
+  }
+
+//-------------------------------------
+
 double& Vector2D::X()
   {
   return m_x;
