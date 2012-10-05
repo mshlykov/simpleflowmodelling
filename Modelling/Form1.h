@@ -39,9 +39,9 @@ namespace Modelling {
 		}
   private: System::Windows::Forms::PictureBox^  pictureBox1;
            Drawer^ m_drawer;
-  private: System::Windows::Forms::TextBox^  textBox1;
+
   private: System::Windows::Forms::TextBox^  textBox2;
-  private: System::Windows::Forms::Label^  label1;
+
   private: System::Windows::Forms::Label^  label2;
   private: System::Windows::Forms::Button^  button1;
   private: System::Windows::Forms::TextBox^  textBox3;
@@ -117,7 +117,7 @@ namespace Modelling {
       pen->EndCap = System::Drawing::Drawing2D::LineCap::ArrowAnchor;
       int N = 20, M = model.GetSize();
       double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
-        minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
+        minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY(), scaler = 1;
       for(int i = 1; i < N - 1; ++i)
         for(int j = 1; j < N - 1; ++j)
           {
@@ -126,7 +126,9 @@ namespace Modelling {
             n_y = miny + j * (maxy - miny) / (N - 1);
           for(int m = 0; m < M; ++m)
             summ = summ + Model::curr_gamma[m] * model.V(m, Vector2D (n_x, n_y));
-          m_drawer->DrawLine(pen, e, n_x, n_y, n_x + summ.X(), n_y + summ.Y());
+          if(i == 1 && j == 1)
+            scaler = 0.5 * (maxx - minx) / ((N - 1) * summ.Length());
+          m_drawer->DrawLine(pen, e, n_x, n_y, n_x + summ.X() * scaler, n_y + summ.Y() * scaler);
           m_drawer->DrawPoint(e, n_x, n_y);
           }
       }
@@ -141,9 +143,7 @@ namespace Modelling {
 		void InitializeComponent(void)
 		{
     this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
-    this->textBox1 = (gcnew System::Windows::Forms::TextBox());
     this->textBox2 = (gcnew System::Windows::Forms::TextBox());
-    this->label1 = (gcnew System::Windows::Forms::Label());
     this->label2 = (gcnew System::Windows::Forms::Label());
     this->button1 = (gcnew System::Windows::Forms::Button());
     this->textBox3 = (gcnew System::Windows::Forms::TextBox());
@@ -162,27 +162,12 @@ namespace Modelling {
     this->pictureBox1->TabIndex = 0;
     this->pictureBox1->TabStop = false;
     // 
-    // textBox1
-    // 
-    this->textBox1->Location = System::Drawing::Point(647, 39);
-    this->textBox1->Name = L"textBox1";
-    this->textBox1->Size = System::Drawing::Size(86, 20);
-    this->textBox1->TabIndex = 1;
-    // 
     // textBox2
     // 
     this->textBox2->Location = System::Drawing::Point(648, 65);
     this->textBox2->Name = L"textBox2";
     this->textBox2->Size = System::Drawing::Size(86, 20);
     this->textBox2->TabIndex = 2;
-    // 
-    // label1
-    // 
-    this->label1->Location = System::Drawing::Point(600, 39);
-    this->label1->Name = L"label1";
-    this->label1->Size = System::Drawing::Size(46, 20);
-    this->label1->TabIndex = 3;
-    this->label1->Text = L"Velocity";
     // 
     // label2
     // 
@@ -226,9 +211,7 @@ namespace Modelling {
     this->Controls->Add(this->textBox3);
     this->Controls->Add(this->button1);
     this->Controls->Add(this->label2);
-    this->Controls->Add(this->label1);
     this->Controls->Add(this->textBox2);
-    this->Controls->Add(this->textBox1);
     this->Controls->Add(this->pictureBox1);
     this->MinimumSize = System::Drawing::Size(100, 100);
     this->Name = L"Form1";
@@ -245,15 +228,13 @@ namespace Modelling {
     private: System::Void Form1_Resize(System::Object^  sender, System::EventArgs^  e) 
                {
                ReshapePictureBox1();
-               label1->Location = System::Drawing::Point(pictureBox1->Width, label1->Location.Y);
                label2->Location = System::Drawing::Point(pictureBox1->Width, label2->Location.Y);
                label3->Location = System::Drawing::Point(pictureBox1->Width, label3->Location.Y);
-             
-               textBox1->Location = System::Drawing::Point(pictureBox1->Width + label1->Width, label1->Location.Y);
+
                textBox2->Location = System::Drawing::Point(pictureBox1->Width + label2->Width, label2->Location.Y);
                textBox3->Location = System::Drawing::Point(pictureBox1->Width + label3->Width, label3->Location.Y);
 
-               button1->Location = System::Drawing::Point(textBox1->Location.X, button1->Location.Y);
+               button1->Location = System::Drawing::Point(textBox2->Location.X, button1->Location.Y);
                m_drawer->SetTargetResolution(pictureBox1->Size.Width, pictureBox1->Size.Height);
 
                ClearPicture();
@@ -266,10 +247,10 @@ namespace Modelling {
 
     private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) 
                {
-               double velocity = System::Double::Parse(textBox1->Text), 
-                 angle = 2 * Math::PI * System::Double::Parse(textBox2->Text) / 360,
+
+               double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text) / 360,
                  gamma = System::Double::Parse(textBox3->Text);
-               model.CalcGamma(Model::curr_gamma, Vector2D(velocity * Math::Cos(angle), velocity * Math::Sin(angle)), gamma);
+               model.CalcGamma(Model::curr_gamma, Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
 
                ClearPicture();
                if(!Model::curr_gamma.empty())

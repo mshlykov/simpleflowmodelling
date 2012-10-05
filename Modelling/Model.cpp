@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "Matrix.h"
 std::vector<double> Model::curr_gamma;
-
+using System::Math;
 Model model;
 
 Model::Model()
@@ -75,6 +75,53 @@ void Model::CalcGamma(std::vector<double>& o_gamma, const Vector2D& i_velocity, 
   o_gamma.resize(M);
   for(std::size_t i = 0; i < o_gamma.size(); ++i)
     o_gamma[i] = b(i, 0);
+  }
+
+//-------------------------------------
+
+//-------------------------------------
+
+double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamma)
+  {
+  double summ = 0;
+  for(std::size_t i = 0, curr_idx = 0; i < m_contours.size(); ++i, curr_idx += m_contours[i].size())
+    for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
+      {
+      double pointarg = 0, dx = i_point.X() - m_contours[i][j].X(), 
+        dy = i_point.X() - m_contours[i][j].X();
+      if(! (Math::Abs(dx) < 0.00001))
+        {
+        if(dx > 0 && dy > 0)
+          pointarg = Math::Atan(dy / dx);
+        else if(dx < 0)
+          pointarg = Math::Atan(dy / dx) + Math::PI;
+        else if(dx > 0 && dy < 0)
+          pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
+        }
+
+      summ += pointarg * i_gamma[curr_idx + j];
+      }
+    summ /= (2 * Math::PI);
+    summ += i_point.X() * m_velocity.X() + i_point.X() * m_velocity.Y();
+    return summ;
+  }
+
+//-------------------------------------
+
+double Model::CalcPsi(const Vector2D& i_point, const std::vector<double>& i_gamma)
+  {
+  double summ = 0, delta_star = 0.1 * m_delta;
+  for(std::size_t i = 0, curr_idx = 0; i < m_contours.size(); ++i, curr_idx += m_contours[i].size())
+    for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
+      {
+      double len = (i_point - m_contours[i][j]).Length2();
+      if(len < delta_star * delta_star)
+        len = delta_star * delta_star;
+      summ -= Math::Log(len) * i_gamma[curr_idx + j];
+      }
+    summ /= (4 * Math::PI);
+    summ += i_point.Y() * m_velocity.X() - i_point.X() * m_velocity.Y();
+    return summ;
   }
 
 //-------------------------------------
