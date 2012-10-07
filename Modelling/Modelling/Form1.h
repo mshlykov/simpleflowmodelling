@@ -136,6 +136,8 @@ namespace Modelling {
     void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, std::vector<std::vector<int>>& o_colors_by_psi, 
       const std::vector<double>& i_gamma, const Model& i_model)
       {
+      o_colors_by_phi.clear();
+      o_colors_by_psi.clear();
       int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 16, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
       double max_phi = i_model.CalcPhi(Vector2D(), i_gamma), min_phi = i_model.CalcPhi(Vector2D(), i_gamma), 
         max_psi = i_model.CalcPsi(Vector2D(), i_gamma), min_psi = i_model.CalcPsi(Vector2D(), i_gamma), 
