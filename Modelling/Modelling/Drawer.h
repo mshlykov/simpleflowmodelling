@@ -1,5 +1,9 @@
 #pragma once
 
+using namespace System;
+using namespace System::Drawing;
+using namespace System::Drawing::Drawing2D;
+
 ref class Drawer
   {
   public:
@@ -53,9 +57,10 @@ ref class Drawer
 
     //-------------------------------------
 
-    void DrawPoint(System::Drawing::Graphics^ i_graphics, double i_x, double i_y)
+    void DrawPoint(System::Drawing::Graphics^ i_graphics, double i_x, double i_y, int i_color)
       {
-      i_graphics->FillRectangle(System::Drawing::Brushes::Black, ScaleX(i_x), ScaleY(i_y), 3, 3);
+      System::Drawing::Brush^ br = gcnew System::Drawing::SolidBrush( Color::FromArgb(i_color));
+      i_graphics->FillRectangle(/*System::Drawing::Brushes::Black*/ br, ScaleX(i_x) - 1, ScaleY(i_y) - 1, 3, 3);
       }
 
     //-------------------------------------
