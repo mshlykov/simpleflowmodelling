@@ -129,7 +129,69 @@ namespace Modelling {
           if(i == 1 && j == 1)
             scaler = 0.5 * (maxx - minx) / ((N - 1) * summ.Length());
           m_drawer->DrawLine(pen, e, n_x, n_y, n_x + summ.X() * scaler, n_y + summ.Y() * scaler);
-          m_drawer->DrawPoint(e, n_x, n_y);
+          m_drawer->DrawPoint(e, n_x, n_y, 0xFF000000);
+          }
+      }
+
+    void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, std::vector<std::vector<int>>& o_colors_by_psi, 
+      const std::vector<double>& i_gamma, const Model& i_model)
+      {
+      int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 16, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
+      double max_phi = i_model.CalcPhi(Vector2D(), i_gamma), min_phi = i_model.CalcPhi(Vector2D(), i_gamma), 
+        max_psi = i_model.CalcPsi(Vector2D(), i_gamma), min_psi = i_model.CalcPsi(Vector2D(), i_gamma), 
+        maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
+        minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
+      Vector2D curr_point;
+      std::vector<std::vector<double>> psi_matr, phi_matr;
+      o_colors_by_phi.resize(N);
+      o_colors_by_psi.resize(N);
+      phi_matr.resize(N);
+      psi_matr.resize(N);
+      for(int i = 0; i < N; ++i)
+        {
+        curr_point.X() = minx + double(i) / (N - 1);
+
+        for(int j = 0; j < N; ++j)
+          {
+          curr_point.Y() = miny + double(j) / (N - 1);
+          phi_matr[i].push_back(i_model.CalcPhi(curr_point, i_gamma));
+          psi_matr[i].push_back(i_model.CalcPsi(curr_point, i_gamma));
+          
+          if(min_psi > psi_matr[i][j])
+            min_psi = psi_matr[i][j];
+          if(min_phi > phi_matr[i][j])
+            min_phi = phi_matr[i][j];
+
+          if(max_psi < psi_matr[i][j])
+            max_psi = psi_matr[i][j];
+          if(max_phi < phi_matr[i][j])
+            max_phi = phi_matr[i][j];
+          }
+        }
+
+      for(int i = 0; i < N; ++i)
+        for(int j = 0; j < N; ++j)
+          {
+          int phi_color = static_cast<int>(number_of_colors * (phi_matr[i][j] - min_phi) / (max_phi - min_phi));
+          int psi_color = static_cast<int>(number_of_colors * (psi_matr[i][j] - min_psi) / (max_psi - min_psi));
+
+          o_colors_by_phi[i].push_back(yellow_color - phi_color * 0x1000);
+          o_colors_by_psi[i].push_back(yellow_color - psi_color * 0x1000);
+          }
+
+      }
+
+    //-------------------------------------
+
+    void FillColors(const std::vector<std::vector<int>>& i_colors)
+      {
+      Graphics^ e = Graphics::FromImage(pictureBox1->Image);
+      double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
+        minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
+      for(std::size_t i = 0; i < i_colors.size(); ++i)
+        for(std::size_t j = 0; j < i_colors[i].size(); ++j)
+          {
+          m_drawer->DrawPoint(e, minx + i * (maxx - minx) / (i_colors[i].size() - 1), miny + j * (maxy - miny) / (i_colors.size() - 1), i_colors[i][j]);
           }
       }
 
@@ -239,7 +301,10 @@ namespace Modelling {
 
                ClearPicture();
                if(!Model::curr_gamma.empty())
+                 {
+                 FillColors(Model::colors_by_psi);
                  DrawPoints();
+                 }
                Invalidate(true);
                }
 
@@ -251,10 +316,14 @@ namespace Modelling {
                double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text) / 360,
                  gamma = System::Double::Parse(textBox3->Text);
                model.CalcGamma(Model::curr_gamma, Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
+               CalcColors(Model::colors_by_phi, Model::colors_by_psi, Model::curr_gamma, model);
 
                ClearPicture();
                if(!Model::curr_gamma.empty())
+                 {
+                 FillColors(Model::colors_by_psi);
                  DrawPoints();
+                 }
                Invalidate(true);
                }
 
@@ -265,6 +334,7 @@ namespace Modelling {
                DrawAxes();
                DrawContours();
                }
+
 };
 }
 

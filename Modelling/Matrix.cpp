@@ -203,6 +203,47 @@ namespace MatrSpace
 		return res;
 	}
 
+  Matrix Matrix::SolveGauss(Matrix b)
+    {
+
+    Matrix m = *this, res(b.GetRsize(), 1);
+
+    int i,j,k;
+    double teta;
+
+    for(i=0;i<m.GetCsize();i++)
+      {
+      if(m(i,i)==0)
+        {
+        for(j=i+1;j<m.GetRsize();j++)
+          if (m(j,i)!=0)
+            {
+            for(k=i;k<GetRsize();k++)
+              {
+              teta=m(i, k);
+              m(i, k)=m(j,k);
+              m(j,k)=teta;
+              }
+            teta=b(i,0);
+            b(i,0)=b(j,0);
+            b(j,0)=teta;
+            break;
+            }
+        }
+      teta=m(i,i);
+      for(j=i;j<m.GetCsize();j++)m(i,j)/=teta;
+      b(i,0)/=teta;
+      for(j=0;j<m.GetRsize();j++)
+        if (j!=i)
+          {
+          teta=m(j,i);
+          for(k=i;k<m.GetCsize();k++) m(j,k)-=teta*m(i,k);
+          b(j,0)-=b(i,0)*teta;
+          }
+      }
+    return b;
+    }
+
 	double Matrix::SqEuclNorm()
 	{
 		double summ=0;

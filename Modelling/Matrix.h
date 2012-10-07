@@ -52,6 +52,8 @@ class Matrix
     friend double NormVect(Matrix);
 		friend double NormMatr(Matrix);
 		
+
+    Matrix SolveGauss(Matrix b);
     double Norm1(int&,int&);
 		double SqEuclNorm();
 		Matrix PseudoInverse();

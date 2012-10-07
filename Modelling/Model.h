@@ -11,15 +11,18 @@ class Model
     
     void Init();
     void CalcGamma(std::vector<double>& o_gamma, const Vector2D& i_velocity, double i_gamma);
-    double CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamma);
-    double CalcPsi(const Vector2D& i_point, const std::vector<double>& i_gamma);
+    double CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamma) const;
+    double CalcPsi(const Vector2D& i_point, const std::vector<double>& i_gamma) const;
 
     Vector2D V(int i_idx, const Vector2D&  i_vect) const;
     
     const Contours& GetContours() const;
     const Vector2D& GetVelocity() const;
     int GetSize() const;
+
     static std::vector<double> curr_gamma;
+    static std::vector<std::vector<int>> colors_by_phi;
+    static std::vector<std::vector<int>> colors_by_psi;
 
   private:
 

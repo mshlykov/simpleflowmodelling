@@ -2,6 +2,8 @@
 #include "Model.h"
 #include "Matrix.h"
 std::vector<double> Model::curr_gamma;
+std::vector<std::vector<int>> Model::colors_by_phi;
+std::vector<std::vector<int>> Model::colors_by_psi;
 using System::Math;
 Model model;
 
@@ -70,8 +72,8 @@ void Model::CalcGamma(std::vector<double>& o_gamma, const Vector2D& i_velocity, 
   A(M - 1, M - 1) = 1;
   b(M - 1, 0) = m_gamma;
 
-  b = A.Inverse() * b;
-
+  //b = A.Inverse() * b;
+  b = A.SolveGauss(b);
   o_gamma.resize(M);
   for(std::size_t i = 0; i < o_gamma.size(); ++i)
     o_gamma[i] = b(i, 0);
@@ -79,12 +81,12 @@ void Model::CalcGamma(std::vector<double>& o_gamma, const Vector2D& i_velocity, 
 
 //-------------------------------------
 
-//-------------------------------------
-
-double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamma)
+double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamma) const
   {
   double summ = 0;
-  for(std::size_t i = 0, curr_idx = 0; i < m_contours.size(); ++i, curr_idx += m_contours[i].size())
+  for(std::size_t i = 0, curr_idx = 0; i < m_contours.size(); ++i)
+    {
+
     for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
       {
       double pointarg = 0, dx = i_point.X() - m_contours[i][j].X(), 
@@ -101,6 +103,8 @@ double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamm
 
       summ += pointarg * i_gamma[curr_idx + j];
       }
+    curr_idx += m_contours[i].size();
+    }
     summ /= (2 * Math::PI);
     summ += i_point.X() * m_velocity.X() + i_point.X() * m_velocity.Y();
     return summ;
@@ -108,10 +112,12 @@ double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamm
 
 //-------------------------------------
 
-double Model::CalcPsi(const Vector2D& i_point, const std::vector<double>& i_gamma)
+double Model::CalcPsi(const Vector2D& i_point, const std::vector<double>& i_gamma) const
   {
   double summ = 0, delta_star = 0.1 * m_delta;
-  for(std::size_t i = 0, curr_idx = 0; i < m_contours.size(); ++i, curr_idx += m_contours[i].size())
+  for(std::size_t i = 0, curr_idx = 0; i < m_contours.size(); ++i)
+    {
+
     for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
       {
       double len = (i_point - m_contours[i][j]).Length2();
@@ -119,6 +125,9 @@ double Model::CalcPsi(const Vector2D& i_point, const std::vector<double>& i_gamm
         len = delta_star * delta_star;
       summ -= Math::Log(len) * i_gamma[curr_idx + j];
       }
+    
+    curr_idx += m_contours[i].size();
+    }
     summ /= (4 * Math::PI);
     summ += i_point.Y() * m_velocity.X() - i_point.X() * m_velocity.Y();
     return summ;
