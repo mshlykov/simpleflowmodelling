@@ -90,7 +90,7 @@ double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamm
     for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
       {
       double pointarg = 0, dx = i_point.X() - m_contours[i][j].X(), 
-        dy = i_point.X() - m_contours[i][j].X();
+        dy = i_point.Y() - m_contours[i][j].Y();
       if(! (Math::Abs(dx) < 0.00001))
         {
         if(dx > 0 && dy > 0)
@@ -100,13 +100,19 @@ double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamm
         else if(dx > 0 && dy < 0)
           pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
         }
-
+      if(! (Math::Abs(dx) < 0.00001))
+        {
+        if(dy > 0)
+          pointarg = Math::PI / 2;
+        else 
+          pointarg = 3 * Math::PI / 2;
+        }
       summ += pointarg * i_gamma[curr_idx + j];
       }
     curr_idx += m_contours[i].size();
     }
     summ /= (2 * Math::PI);
-    summ += i_point.X() * m_velocity.X() + i_point.X() * m_velocity.Y();
+    summ += i_point.X() * m_velocity.X() + i_point.Y() * m_velocity.Y();
     return summ;
   }
 

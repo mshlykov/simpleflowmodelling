@@ -89,7 +89,7 @@ namespace Modelling {
     void DrawContours()
       {
       Graphics^ e = Graphics::FromImage(pictureBox1->Image);
-      Pen^ pen = gcnew Pen(Color::Red);
+      Pen^ pen = gcnew Pen(Color::DarkBlue);
       pen->Width = 2;
       pen->EndCap = System::Drawing::Drawing2D::LineCap::RoundAnchor;
       pen->StartCap = System::Drawing::Drawing2D::LineCap::RoundAnchor;
@@ -151,11 +151,11 @@ namespace Modelling {
       psi_matr.resize(N);
       for(int i = 0; i < N; ++i)
         {
-        curr_point.X() = minx + double(i) / (N - 1);
+        curr_point.X() = minx + i * (maxx - minx) / (N - 1);
 
         for(int j = 0; j < N; ++j)
           {
-          curr_point.Y() = miny + double(j) / (N - 1);
+          curr_point.Y() = miny + j * (maxy - miny) / (N - 1);
           phi_matr[i].push_back(i_model.CalcPhi(curr_point, i_gamma));
           psi_matr[i].push_back(i_model.CalcPsi(curr_point, i_gamma));
           
@@ -188,6 +188,7 @@ namespace Modelling {
     void FillColors(const std::vector<std::vector<int>>& i_colors)
       {
       Graphics^ e = Graphics::FromImage(pictureBox1->Image);
+      e->SmoothingMode = SmoothingMode::HighSpeed;
       double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       for(std::size_t i = 0; i < i_colors.size(); ++i)
