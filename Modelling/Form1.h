@@ -188,7 +188,6 @@ namespace Modelling {
     void FillColors(const std::vector<std::vector<int>>& i_colors)
       {
       Graphics^ e = Graphics::FromImage(pictureBox1->Image);
-      e->SmoothingMode = SmoothingMode::HighSpeed;
       double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       for(std::size_t i = 0; i < i_colors.size(); ++i)
@@ -305,7 +304,7 @@ namespace Modelling {
                ClearPicture();
                if(!Model::curr_gamma.empty())
                  {
-                 FillColors(Model::colors_by_psi);
+                 FillColors(Model::colors_by_phi);
                  DrawPoints();
                  }
                Invalidate(true);
@@ -324,7 +323,7 @@ namespace Modelling {
                ClearPicture();
                if(!Model::curr_gamma.empty())
                  {
-                 FillColors(Model::colors_by_psi);
+                 FillColors(Model::colors_by_phi);
                  DrawPoints();
                  }
                Invalidate(true);
