@@ -100,13 +100,6 @@ double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamm
         else if(dx > 0 && dy < 0)
           pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
         }
-      if(! (Math::Abs(dx) < 0.00001))
-        {
-        if(dy > 0)
-          pointarg = Math::PI / 2;
-        else 
-          pointarg = 3 * Math::PI / 2;
-        }
       summ += pointarg * i_gamma[curr_idx + j];
       }
     curr_idx += m_contours[i].size();

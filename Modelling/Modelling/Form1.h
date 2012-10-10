@@ -69,6 +69,9 @@ namespace Modelling {
       
       pen->EndCap = System::Drawing::Drawing2D::LineCap::ArrowAnchor;
       
+      double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
+        minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
+
       //Axes
       m_drawer->DrawLine(pen, e, m_drawer->GetMinX(), 0, m_drawer->GetMaxX(), 0);
       m_drawer->DrawLine(pen, e, 0, m_drawer->GetMinY(), 0, m_drawer->GetMaxY());
@@ -76,11 +79,15 @@ namespace Modelling {
       pen->EndCap = System::Drawing::Drawing2D::LineCap::Flat;
       
       //XScale
-      m_drawer->DrawLine(pen, e, 0.5, -0.01, 0.5, 0.01);
+      for(double i = minx; i < maxx; i += 0.5)
+        m_drawer->DrawLine(pen, e, i, -0.01, i, 0.01);
+
       m_drawer->DrawText(e, L"0.5", 0.5, 0);
 
       //YScale
-      m_drawer->DrawLine(pen, e, -0.01, 0.5, 0.01, 0.5);
+      for(double i = minx; i < maxx; i += 0.5)
+        m_drawer->DrawLine(pen, e, -0.01, i, 0.01, i);
+
       m_drawer->DrawText(e, L"0.5", 0, 0.5);
       }
 
@@ -188,6 +195,7 @@ namespace Modelling {
     void FillColors(const std::vector<std::vector<int>>& i_colors)
       {
       Graphics^ e = Graphics::FromImage(pictureBox1->Image);
+      e->SmoothingMode = SmoothingMode::HighSpeed;
       double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       for(std::size_t i = 0; i < i_colors.size(); ++i)
