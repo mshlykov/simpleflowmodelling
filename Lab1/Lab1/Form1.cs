@@ -38,5 +38,11 @@ namespace Lab1
             if(!Users.AuthSuccess())
                 FormController.GetMainForm().Close();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            textBox2.Text = "";
+        }
     }
 }

@@ -14,12 +14,13 @@ namespace Lab1
         
         static DBStorage()
         {
-            m_connection = new OleDbConnection(@"Provider=SQLOLEDB;Server=.\SQLExpress;AttachDbFilename=D:\Maks\TFSCodeplex\modelling\Lab1\Lab1\bin\Debug\AIS.mdf;Database=AIS;Trusted_Connection=Yes;");
+            m_connection = new OleDbConnection(@"Provider=SQLOLEDB;Server=.\SQLExpress;Trusted_Connection=Yes;");
         }
 
         public static void Open()
         {
             m_connection.Open();
+            m_connection.ChangeDatabase("AIS");
         }
 
         public static void Close()
@@ -34,6 +35,23 @@ namespace Lab1
             DataTable tbl = new DataTable();
             tbl.Load(rdr);
             i_view.DataSource = tbl;
+        }
+
+        public static void BackUp()
+        {
+            OleDbCommand comm = new OleDbCommand(@"BACKUP DATABASE AIS TO DISK='D:\Maks\TFSCodeplex\modelling\Lab1\Lab1\bin\Debug\Backup\temp.bak'", m_connection);
+            comm.ExecuteNonQuery();
+            System.Windows.Forms.MessageBox.Show("Архівування завершене.");
+        }
+
+        public static void Restore()
+        {
+            m_connection.ChangeDatabase("master");
+            OleDbCommand comm1 = new OleDbCommand(@"sp_detach_db @dbname='AIS'", m_connection),
+                comm2 = new OleDbCommand(@"RESTORE DATABASE AIS FROM DISK = 'D:\Maks\TFSCodeplex\modelling\Lab1\Lab1\bin\Debug\Backup\temp.bak' WITH REPLACE", m_connection);
+            comm1.ExecuteNonQuery();
+            comm2.ExecuteNonQuery();
+            System.Windows.Forms.MessageBox.Show("Відновлення завершене.");
         }
     }
 }
