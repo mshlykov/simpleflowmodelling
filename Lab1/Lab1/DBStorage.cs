@@ -5,6 +5,8 @@ using System.Text;
 using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
+using System.IO;
+using System.Windows.Forms;
 
 namespace Lab1
 {
@@ -39,7 +41,7 @@ namespace Lab1
 
         public static void BackUp()
         {
-            OleDbCommand comm = new OleDbCommand(@"BACKUP DATABASE AIS TO DISK='D:\Maks\TFSCodeplex\modelling\Lab1\Lab1\bin\Debug\Backup\temp.bak'", m_connection);
+            OleDbCommand comm = new OleDbCommand(@"BACKUP DATABASE AIS TO DISK='" + Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.bak" + '\'', m_connection);
             comm.ExecuteNonQuery();
             System.Windows.Forms.MessageBox.Show("Архівування завершене.");
         }
@@ -48,7 +50,7 @@ namespace Lab1
         {
             m_connection.ChangeDatabase("master");
             OleDbCommand comm1 = new OleDbCommand(@"sp_detach_db @dbname='AIS'", m_connection),
-                comm2 = new OleDbCommand(@"RESTORE DATABASE AIS FROM DISK = 'D:\Maks\TFSCodeplex\modelling\Lab1\Lab1\bin\Debug\Backup\temp.bak' WITH REPLACE", m_connection);
+                comm2 = new OleDbCommand(@"RESTORE DATABASE AIS FROM DISK = '" + Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.bak" + "\' WITH REPLACE", m_connection);
             comm1.ExecuteNonQuery();
             comm2.ExecuteNonQuery();
             System.Windows.Forms.MessageBox.Show("Відновлення завершене.");

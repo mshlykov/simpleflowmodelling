@@ -44,5 +44,10 @@ namespace Lab1
             textBox1.Text = "";
             textBox2.Text = "";
         }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            textBox1.Focus();
+        }
     }
 }

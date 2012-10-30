@@ -32,6 +32,14 @@ namespace Lab1
                 button3.Enabled = false;
                 button4.Enabled = false;
             }
+            else
+            {
+                button1.Enabled = true;
+                button2.Enabled = true;
+                button3.Enabled = true;
+                button4.Enabled = true;
+            }
+            this.Show();
             DBStorage.Open();
             DBStorage.ExecuteQuery("SELECT * FROM Працівник", dataGridView1);
         }
@@ -57,6 +65,11 @@ namespace Lab1
             DBStorage.Close();
             this.Hide();
             ChangeUser();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
