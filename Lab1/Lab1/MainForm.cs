@@ -39,9 +39,11 @@ namespace Lab1
                 button3.Enabled = true;
                 button4.Enabled = true;
             }
+            this.listBox1.Items.Clear();
             this.Show();
             DBStorage.Open();
             DBStorage.ExecuteQuery("SELECT * FROM Працівник", dataGridView1);
+            DBStorage.ExecuteQuery("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG='AIS' AND TABLE_NAME!='sysdiagrams'", listBox1);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -70,6 +72,11 @@ namespace Lab1
         private void button6_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DBStorage.ExecuteQuery("SELECT * FROM " + (string)listBox1.SelectedItem, dataGridView1);
         }
     }
 }

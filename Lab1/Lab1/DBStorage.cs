@@ -39,6 +39,25 @@ namespace Lab1
             i_view.DataSource = tbl;
         }
 
+        public static void ExecuteQuery(string i_query_text, System.Windows.Forms.ListBox i_box)
+        {
+            OleDbCommand comm = new OleDbCommand(i_query_text, m_connection);
+            OleDbDataReader rdr = comm.ExecuteReader();
+
+
+            if (rdr.HasRows)
+            {
+                while (rdr.Read())
+                {
+                    i_box.Items.Add(rdr.GetString(0));
+                }
+            }
+            //foreach (string a in rdr["TABLE_NAME"])
+            //{
+            //    i_box.Items.Add(a);
+            //}
+        }
+
         public static void BackUp()
         {
             OleDbCommand comm = new OleDbCommand(@"BACKUP DATABASE AIS TO DISK='" + Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.bak" + '\'', m_connection);
