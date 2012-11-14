@@ -52,10 +52,6 @@ namespace Lab1
                     i_box.Items.Add(rdr.GetString(0));
                 }
             }
-            //foreach (string a in rdr["TABLE_NAME"])
-            //{
-            //    i_box.Items.Add(a);
-            //}
         }
 
         public static void BackUp()

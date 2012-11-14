@@ -78,5 +78,12 @@ namespace Lab1
         {
             DBStorage.ExecuteQuery("SELECT * FROM " + (string)listBox1.SelectedItem, dataGridView1);
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            //Statsbutton
+            //this.Hide();
+            FormController.GetStatsForm().ShowDialog();
+        }
     }
 }
