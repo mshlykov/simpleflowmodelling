@@ -27,17 +27,22 @@ namespace Lab1
             FormController.GetAuthrizationForm().ShowDialog();
             if (!Users.GetCurrPermission().Equals("Administrator"))
             {
-                button1.Enabled = false;
                 button2.Enabled = false;
                 button3.Enabled = false;
-                button4.Enabled = false;
+                
+                dataGridView1.ReadOnly = true;
+                this.dataGridView1.AllowUserToAddRows = false;
+                this.dataGridView1.AllowUserToDeleteRows = false;
+            
             }
             else
             {
-                button1.Enabled = true;
                 button2.Enabled = true;
                 button3.Enabled = true;
-                button4.Enabled = true;
+                
+                dataGridView1.ReadOnly = false;
+                this.dataGridView1.AllowUserToAddRows = true;
+                this.dataGridView1.AllowUserToDeleteRows = true;
             }
             this.listBox1.Items.Clear();
             this.Show();
@@ -49,6 +54,7 @@ namespace Lab1
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             DBStorage.Close();
+            DBStorage.SaveQueries();
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -71,12 +77,17 @@ namespace Lab1
 
         private void button6_Click(object sender, EventArgs e)
         {
-
+            FormController.GetSearchForm().ShowDialog();
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             DBStorage.ExecuteQuery("SELECT * FROM " + (string)listBox1.SelectedItem, dataGridView1);
+        }
+
+        public DataGridView GetDataView()
+        {
+            return dataGridView1;
         }
 
         private void button7_Click(object sender, EventArgs e)

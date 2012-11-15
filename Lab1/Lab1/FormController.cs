@@ -8,13 +8,19 @@ namespace Lab1
 {
     class FormController
     {
-        private static Form m_main_form, m_authorization_form, m_stats_form;
+        private static Form m_main_form, m_authorization_form, m_stats_form, m_search_form;
 
         static FormController()
         {
             m_main_form = new MainForm();
             m_authorization_form = new Form1();
+            m_search_form = new SearchForm();
             m_stats_form = new StatsForm();
+        }
+
+        public static Form GetSearchForm()
+        {
+            return m_search_form;
         }
 
         public static Form GetMainForm()

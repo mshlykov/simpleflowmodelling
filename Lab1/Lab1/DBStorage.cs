@@ -13,10 +13,21 @@ namespace Lab1
     class DBStorage
     {
         private static OleDbConnection m_connection;
-        
+        public static Dictionary<string, string> m_user_queries;
+
         static DBStorage()
         {
             m_connection = new OleDbConnection(@"Provider=SQLOLEDB;Server=.\SQLExpress;Trusted_Connection=Yes;");
+            m_user_queries = new Dictionary<string, string>();
+
+            System.IO.StreamReader sr = new System.IO.StreamReader("UserQueries.txt");
+            String name_str, query_str;
+            while (!sr.EndOfStream)
+            {
+                name_str = sr.ReadLine();
+                query_str = sr.ReadLine();
+                m_user_queries.Add(name_str, query_str);
+            }
         }
 
         public static void Open()
@@ -75,6 +86,18 @@ namespace Lab1
             comm1.ExecuteNonQuery();
             comm2.ExecuteNonQuery();
             System.Windows.Forms.MessageBox.Show("Відновлення завершене.");
+        }
+
+        public static void SaveQueries()
+        {
+            StreamWriter wrtr = new StreamWriter("UserQueries.txt");
+
+            foreach (string key in m_user_queries.Keys)
+            {
+                wrtr.WriteLine(key);
+                wrtr.WriteLine(m_user_queries[key]);
+            }
+            wrtr.Flush();
         }
     }
 }
