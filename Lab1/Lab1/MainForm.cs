@@ -81,8 +81,6 @@ namespace Lab1
 
         private void button7_Click(object sender, EventArgs e)
         {
-            //Statsbutton
-            //this.Hide();
             FormController.GetStatsForm().ShowDialog();
         }
     }

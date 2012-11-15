@@ -30,6 +30,12 @@ namespace Lab1
             m_connection.Close();
         }
 
+        public static OleDbDataReader ExecuteQuery(string i_query_text)
+        {
+            OleDbCommand comm = new OleDbCommand(i_query_text, m_connection);
+            return comm.ExecuteReader();
+        }
+
         public static void ExecuteQuery(string i_query_text, System.Windows.Forms.DataGridView i_view)
         {
             OleDbCommand comm = new OleDbCommand(i_query_text, m_connection);
