@@ -71,6 +71,19 @@ namespace Lab1
             }
         }
 
+        public static void ExecuteNonQuery(String i_query)
+        {
+            OleDbCommand comm = new OleDbCommand(i_query, m_connection);
+            comm.ExecuteNonQuery();
+            
+        }
+
+        public static OleDbDataAdapter GetAdapter(String i_query)
+        {
+            OleDbDataAdapter ad = new OleDbDataAdapter(i_query, m_connection);
+            return ad;
+        }
+
         public static void BackUp()
         {
             OleDbCommand comm = new OleDbCommand(@"BACKUP DATABASE AIS TO DISK='" + Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.bak" + '\'', m_connection);

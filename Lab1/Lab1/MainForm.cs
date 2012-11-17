@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Data.OleDb;
 
 namespace Lab1
 {
@@ -82,6 +83,12 @@ namespace Lab1
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (Users.GetCurrPermission().Equals("Administrator"))
+            {
+                dataGridView1.ReadOnly = false;
+                this.dataGridView1.AllowUserToAddRows = true;
+                this.dataGridView1.AllowUserToDeleteRows = true;
+            }
             DBStorage.ExecuteQuery("SELECT * FROM " + (string)listBox1.SelectedItem, dataGridView1);
         }
 
@@ -93,6 +100,26 @@ namespace Lab1
         private void button7_Click(object sender, EventArgs e)
         {
             FormController.GetStatsForm().ShowDialog();
+        }
+
+        private void dataGridView1_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            
+        }
+
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            
+        }
+
+        private void dataGridView1_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+
         }
     }
 }
