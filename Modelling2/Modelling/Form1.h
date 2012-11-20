@@ -312,7 +312,7 @@ namespace Modelling {
                ClearPicture();
                if(!Model::curr_gamma.empty())
                  {
-                 FillColors(Model::colors_by_phi);
+                 //FillColors(Model::colors_by_phi);
                  DrawPoints();
                  }
                Invalidate(true);
@@ -326,12 +326,12 @@ namespace Modelling {
                double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text) / 360,
                  gamma = System::Double::Parse(textBox3->Text);
                model.CalcGamma(Model::curr_gamma, Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
-               CalcColors(Model::colors_by_phi, Model::colors_by_psi, Model::curr_gamma, model);
+               //CalcColors(Model::colors_by_phi, Model::colors_by_psi, Model::curr_gamma, model);
 
                ClearPicture();
                if(!Model::curr_gamma.empty())
                  {
-                 FillColors(Model::colors_by_phi);
+                 //FillColors(Model::colors_by_phi);
                  DrawPoints();
                  }
                Invalidate(true);
