@@ -4,6 +4,9 @@
 std::vector<double> Model::curr_gamma;
 std::vector<std::vector<int>> Model::colors_by_phi;
 std::vector<std::vector<int>> Model::colors_by_psi;
+std::vector<std::vector<Vector2D>> Model::off_points(5);
+std::vector<std::vector<double>> Model::off_gamma(5);
+
 using System::Math;
 Model model;
 
@@ -37,6 +40,16 @@ void Model::Init()
       }
   m_delta *= 0.49;
   m_contours[1].pop_back();
+  off_points[0].push_back(Vector2D(-0.5, 0.5));
+  off_points[1].push_back(Vector2D(-0.5, -0.5));
+  off_points[2].push_back(Vector2D(0.5, -0.5));
+  off_points[3].push_back(Vector2D(0.5, 0.5));
+  off_points[4].push_back(Vector2D(0, 0.5));
+  off_gamma[0].push_back(0);
+  off_gamma[1].push_back(0);
+  off_gamma[2].push_back(0);
+  off_gamma[3].push_back(0);
+  off_gamma[4].push_back(0);
   }
 
 //-------------------------------------
@@ -48,14 +61,11 @@ const Contours& Model::GetContours() const
 
 //-------------------------------------
 
-void Model::CalcGamma(std::vector<double>& o_gamma, const Vector2D& i_velocity, double i_gamma)
+void Model::CalcGamma(std::vector<double>& o_gamma)
   {
   if(!o_gamma.empty())
     o_gamma.clear();
 
-  m_velocity = i_velocity;
-  m_gamma = i_gamma;  
-  
   int M = m_colloc.size() + 1;  
   MatrSpace::Matrix A(M, M), b(M, 1);
   
@@ -63,6 +73,12 @@ void Model::CalcGamma(std::vector<double>& o_gamma, const Vector2D& i_velocity, 
     {
     b(i, 0) = m_velocity * m_normals[i] * (-1);
     
+    for(int j = 0; j < off_points.size(); ++j)
+      for(int k = 1; k < off_points[j].size(); ++k)
+        {
+        b(i, 0) -= off_gamma[j][k] * V(m_colloc[i], off_points[j][k]) * m_normals[i];
+        }
+
     A(M - 1, i) = 1;
 
     for(int j = 0; j < M; ++j)
@@ -70,8 +86,10 @@ void Model::CalcGamma(std::vector<double>& o_gamma, const Vector2D& i_velocity, 
     }
   
   A(M - 1, M - 1) = 1;
-  b(M - 1, 0) = m_gamma;
-
+  b(M - 1 , 0) = m_gamma;
+  for(int j = 0; j < off_points.size(); ++j)
+    for(int k = 1; k < off_points[j].size(); ++k)
+      b(M - 1, 0) -= off_gamma[j][k];
   //b = A.Inverse() * b;
   b = A.SolveGauss(b);
   o_gamma.resize(M);
@@ -104,6 +122,24 @@ double Model::CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamm
       }
     curr_idx += m_contours[i].size();
     }
+
+  for(int i = 0; i < off_points.size(); ++i)
+    for(int j = 1; j < off_points[i].size(); ++j)
+      {
+      double pointarg = 0, dx = i_point.X() - off_points[i][j].X(), 
+        dy = i_point.Y() - off_points[i][j].Y();
+      if(! (Math::Abs(dx) < 0.00001))
+        {
+        if(dx > 0 && dy > 0)
+          pointarg = Math::Atan(dy / dx);
+        else if(dx < 0)
+          pointarg = Math::Atan(dy / dx) + Math::PI;
+        else if(dx > 0 && dy < 0)
+          pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
+        }
+      summ += pointarg * off_gamma[i][j];
+      }
+
     summ /= (2 * Math::PI);
     summ += i_point.X() * m_velocity.X() + i_point.Y() * m_velocity.Y();
     return summ;
@@ -127,10 +163,48 @@ double Model::CalcPsi(const Vector2D& i_point, const std::vector<double>& i_gamm
     
     curr_idx += m_contours[i].size();
     }
+
+  for(int i = 0; i < off_points.size(); ++i)
+    for(int j = 1; j < off_points[i].size(); ++j)
+      {
+      double len = (i_point - off_points[i][j]).Length2();
+      if(len < delta_star * delta_star)
+        len = delta_star * delta_star;
+      summ -= Math::Log(len) * off_gamma[i][j];
+      }
+
     summ /= (4 * Math::PI);
     summ += i_point.Y() * m_velocity.X() - i_point.X() * m_velocity.Y();
     return summ;
   }
+
+//-------------------------------------
+
+Vector2D Model::CalcSpeed(const Vector2D& i_point) const
+  {
+  Vector2D res = m_velocity;
+  int M = GetSize();
+  for(int i = 0; i < M; ++i)
+    res = res + curr_gamma[i] * V(i, i_point);
+  for(int i = 0; i < off_points.size(); ++i)
+    for(int j = 1; j < off_points[i].size(); ++j)
+      res = res + off_gamma[i][j] * V(i_point, off_points[i][j]);
+  return res;
+  }
+
+//-------------------------------------
+
+Vector2D Model::V(const Vector2D& i_vect1, const Vector2D& i_vect2) const
+  {
+  Vector2D a = (i_vect1 - i_vect2).GetOrthogonal();
+  double len = a.Length();
+  if(len > m_delta)
+    a = (1.0 / (2 * len * len * System::Math::PI)) * a;
+  else
+    a = (1.0 / (2 * m_delta * m_delta * System::Math::PI)) * a;
+  return a;
+  }
+
 
 //-------------------------------------
 
@@ -149,6 +223,89 @@ Vector2D Model::V(int i_idx, const Vector2D& i_vect) const
   else
     a = (1.0 / (2 * m_delta * m_delta * System::Math::PI)) * a;
   return a;
+  }
+
+//-------------------------------------
+
+Vector2D Model::GetPoint(int i_idx)
+  {
+  int summ = 0;
+  int i = 0;
+  for(; summ < i_idx + 1; ++i)
+    summ += m_contours[i].size();
+  summ -= m_contours[i - 1].size();
+
+  return m_contours[i - 1][i_idx - summ];
+  }
+
+//-------------------------------------
+
+void Model::UpdatePoints()
+  {
+  double dt  = 1. / CalcSpeed(off_points[0][0]).Length2();
+
+  for(int i = 0; i < off_points.size(); ++i)
+    for(int j = 0; j < off_points[i].size(); ++j)
+      if(dt > 1. / CalcSpeed(off_points[i][j]).Length2())
+        dt = 1. / CalcSpeed(off_points[i][j]).Length2();
+
+  dt = Math::Sqrt(dt) * m_delta;
+  Vector2D vec;
+  for(int i = 0; i < off_points.size(); ++i)
+    {
+      for(int j = 1; j < off_points[i].size(); ++j)
+        {
+        vec = off_points[i][j];
+        off_points[i][j] = off_points[i][j] + dt * CalcSpeed(off_points[i][j]);
+      
+        if(Math::Abs(off_points[i][j].Y() + 0.5) < m_delta && off_points[i][j].X() > -0.5 && off_points[i][j].X() < 0.5)
+          {
+          if(vec.Y() < -0.5)
+            off_points[i][j].Y() = -0.5 - m_delta;
+          else
+            off_points[i][j].Y() = -0.5 + m_delta;
+          }
+      
+        if(Math::Abs(off_points[i][j].X() + 0.5) < m_delta && off_points[i][j].Y() > -0.5 && off_points[i][j].Y() < 0.5)
+          {
+          if(vec.X() < -0.5)
+            off_points[i][j].X() = -0.5 - m_delta;
+          else
+            off_points[i][j].X() = -0.5 + m_delta;
+          }
+
+        if(Math::Abs(off_points[i][j].X()) < m_delta && off_points[i][j].Y() > -0.5 && off_points[i][j].Y() < 0.5)
+          {
+          if(vec.X() < 0)
+            off_points[i][j].X() = -m_delta;
+          else
+            off_points[i][j].X() = m_delta;
+          }
+
+        if(Math::Abs(off_points[i][j].X() - 0.5) < m_delta && off_points[i][j].Y() > -0.5 && off_points[i][j].Y() < 0.5)
+          {
+          if(vec.X() < 0.5)
+            off_points[i][j].X() = 0.5 - m_delta;
+          else
+            off_points[i][j].X() = 0.5 + m_delta;
+          }
+        }
+      off_points[i].push_back(off_points[i][0] + dt * CalcSpeed(off_points[i][0]));
+      if(!curr_gamma.empty())
+        {
+        if(i == 0)
+          off_gamma[0].push_back(curr_gamma[0]);
+        if(i == 1)
+          off_gamma[1].push_back(curr_gamma[29]);
+        if(i == 2)
+          off_gamma[2].push_back(curr_gamma[59]);
+        if(i == 3)
+          off_gamma[3].push_back(curr_gamma[89]);
+        if(i == 4)
+          off_gamma[4].push_back(curr_gamma[90]);
+        }
+    }
+
   }
 
 //-------------------------------------
