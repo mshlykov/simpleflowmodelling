@@ -258,15 +258,16 @@ void Model::UpdatePoints()
         vec = off_points[i][j];
         off_points[i][j] = off_points[i][j] + dt * CalcSpeed(off_points[i][j]);
       
-        if(Math::Abs(off_points[i][j].Y() + 0.5) < m_delta && off_points[i][j].X() > -0.5 && off_points[i][j].X() < 0.5)
+        if(Math::Abs(off_points[i][j].Y() + 0.5) < m_delta && off_points[i][j].X() > -0.5 - m_delta && off_points[i][j].X() < 0.5 + m_delta)
           {
           if(vec.Y() < -0.5)
             off_points[i][j].Y() = -0.5 - m_delta;
           else
             off_points[i][j].Y() = -0.5 + m_delta;
+
           }
       
-        if(Math::Abs(off_points[i][j].X() + 0.5) < m_delta && off_points[i][j].Y() > -0.5 && off_points[i][j].Y() < 0.5)
+        if(Math::Abs(off_points[i][j].X() + 0.5) < m_delta && off_points[i][j].Y() > -0.5 - m_delta  && off_points[i][j].Y() < 0.5 + m_delta)
           {
           if(vec.X() < -0.5)
             off_points[i][j].X() = -0.5 - m_delta;
@@ -274,7 +275,7 @@ void Model::UpdatePoints()
             off_points[i][j].X() = -0.5 + m_delta;
           }
 
-        if(Math::Abs(off_points[i][j].X()) < m_delta && off_points[i][j].Y() > -0.5 && off_points[i][j].Y() < 0.5)
+        if(Math::Abs(off_points[i][j].X()) < m_delta && off_points[i][j].Y() > -0.5 - m_delta && off_points[i][j].Y() < 0.5 + m_delta)
           {
           if(vec.X() < 0)
             off_points[i][j].X() = -m_delta;
@@ -282,7 +283,7 @@ void Model::UpdatePoints()
             off_points[i][j].X() = m_delta;
           }
 
-        if(Math::Abs(off_points[i][j].X() - 0.5) < m_delta && off_points[i][j].Y() > -0.5 && off_points[i][j].Y() < 0.5)
+        if(Math::Abs(off_points[i][j].X() - 0.5) < m_delta && off_points[i][j].Y() > -0.5 - m_delta && off_points[i][j].Y() < 0.5 + m_delta)
           {
           if(vec.X() < 0.5)
             off_points[i][j].X() = 0.5 - m_delta;
