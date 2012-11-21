@@ -39,6 +39,7 @@ namespace Modelling {
 		}
   private: System::Windows::Forms::PictureBox^  pictureBox1;
            Drawer^ m_drawer;
+           bool to_draw;
 
   private: System::Windows::Forms::TextBox^  textBox2;
 
@@ -46,13 +47,16 @@ namespace Modelling {
   private: System::Windows::Forms::Button^  button1;
   private: System::Windows::Forms::TextBox^  textBox3;
   private: System::Windows::Forms::Label^  label3;
+  private: System::Windows::Forms::Timer^  timer1;
+  private: System::Windows::Forms::Button^  button2;
+  private: System::ComponentModel::IContainer^  components;
   protected: 
 
 	private:
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+
 
     void ClearPicture()
       {
@@ -131,31 +135,36 @@ namespace Modelling {
           Vector2D summ = model.GetVelocity();
           double n_x = minx + i * (maxx - minx) / (N - 1), 
             n_y = miny + j * (maxy - miny) / (N - 1);
-          for(int m = 0; m < M; ++m)
-            summ = summ + Model::curr_gamma[m] * model.V(m, Vector2D (n_x, n_y));
+          /*for(int m = 0; m < M; ++m)
+            summ = summ + Model::curr_gamma[m] * model.V(m, Vector2D (n_x, n_y));*/
+          summ = model.CalcSpeed(Vector2D(n_x, n_y));
           if(i == 1 && j == 1)
             scaler = 0.5 * (maxx - minx) / ((N - 1) * summ.Length());
           m_drawer->DrawLine(pen, e, n_x, n_y, n_x + summ.X() * scaler, n_y + summ.Y() * scaler);
           m_drawer->DrawPoint(e, n_x, n_y, 0xFF000000);
           }
+      for(int i = 0; i < Model::off_points.size(); ++i)
+        for(int j = 1; j < Model::off_points[i].size(); ++j)
+          m_drawer->DrawPoint(e, Model::off_points[i][j].X(), Model::off_points[i][j].Y(), 0xFF00F0FF);
       }
 
     void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, std::vector<std::vector<int>>& o_colors_by_psi, 
-      const std::vector<double>& i_gamma, const Model& i_model)
+      const std::vector<double>& i_gamma, const Model& i_model, bool i_mode)
       {
       o_colors_by_phi.clear();
-      o_colors_by_psi.clear();
+      //o_colors_by_psi.clear();
       int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 16, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
-      double max_phi = i_model.CalcPhi(Vector2D(), i_gamma), min_phi = i_model.CalcPhi(Vector2D(), i_gamma), 
-        max_psi = i_model.CalcPsi(Vector2D(), i_gamma), min_psi = i_model.CalcPsi(Vector2D(), i_gamma), 
+      double max_phi =i_mode? i_model.CalcPhi(Vector2D(), i_gamma) : i_model.CalcPsi(Vector2D(), i_gamma), 
+        min_phi = i_mode? i_model.CalcPhi(Vector2D(), i_gamma) : i_model.CalcPsi(Vector2D(), i_gamma) , 
+        //max_psi = i_model.CalcPsi(Vector2D(), i_gamma), min_psi = i_model.CalcPsi(Vector2D(), i_gamma), 
         maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       Vector2D curr_point;
       std::vector<std::vector<double>> psi_matr, phi_matr;
       o_colors_by_phi.resize(N);
-      o_colors_by_psi.resize(N);
+      //o_colors_by_psi.resize(N);
       phi_matr.resize(N);
-      psi_matr.resize(N);
+      //psi_matr.resize(N);
       for(int i = 0; i < N; ++i)
         {
         curr_point.X() = minx + i * (maxx - minx) / (N - 1);
@@ -163,16 +172,16 @@ namespace Modelling {
         for(int j = 0; j < N; ++j)
           {
           curr_point.Y() = miny + j * (maxy - miny) / (N - 1);
-          phi_matr[i].push_back(i_model.CalcPhi(curr_point, i_gamma));
-          psi_matr[i].push_back(i_model.CalcPsi(curr_point, i_gamma));
+          phi_matr[i].push_back(i_mode? i_model.CalcPhi(curr_point, i_gamma) : i_model.CalcPsi(curr_point, i_gamma));
+          //psi_matr[i].push_back(i_model.CalcPsi(curr_point, i_gamma));
           
-          if(min_psi > psi_matr[i][j])
-            min_psi = psi_matr[i][j];
+          /*if(min_psi > psi_matr[i][j])
+            min_psi = psi_matr[i][j];*/
           if(min_phi > phi_matr[i][j])
             min_phi = phi_matr[i][j];
 
-          if(max_psi < psi_matr[i][j])
-            max_psi = psi_matr[i][j];
+          /*if(max_psi < psi_matr[i][j])
+            max_psi = psi_matr[i][j];*/
           if(max_phi < phi_matr[i][j])
             max_phi = phi_matr[i][j];
           }
@@ -182,10 +191,10 @@ namespace Modelling {
         for(int j = 0; j < N; ++j)
           {
           int phi_color = static_cast<int>(number_of_colors * (phi_matr[i][j] - min_phi) / (max_phi - min_phi));
-          int psi_color = static_cast<int>(number_of_colors * (psi_matr[i][j] - min_psi) / (max_psi - min_psi));
+          //int psi_color = static_cast<int>(number_of_colors * (psi_matr[i][j] - min_psi) / (max_psi - min_psi));
 
           o_colors_by_phi[i].push_back(yellow_color - phi_color * 0x1000);
-          o_colors_by_psi[i].push_back(yellow_color - psi_color * 0x1000);
+          //o_colors_by_psi[i].push_back(yellow_color - psi_color * 0x1000);
           }
 
       }
@@ -214,12 +223,15 @@ namespace Modelling {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+    this->components = (gcnew System::ComponentModel::Container());
     this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
     this->textBox2 = (gcnew System::Windows::Forms::TextBox());
     this->label2 = (gcnew System::Windows::Forms::Label());
     this->button1 = (gcnew System::Windows::Forms::Button());
     this->textBox3 = (gcnew System::Windows::Forms::TextBox());
     this->label3 = (gcnew System::Windows::Forms::Label());
+    this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
+    this->button2 = (gcnew System::Windows::Forms::Button());
     (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->BeginInit();
     this->SuspendLayout();
     // 
@@ -274,11 +286,27 @@ namespace Modelling {
     this->label3->TabIndex = 7;
     this->label3->Text = L"Gamma";
     // 
+    // timer1
+    // 
+    this->timer1->Enabled = true;
+    this->timer1->Tick += gcnew System::EventHandler(this, &Form1::timer1_Tick);
+    // 
+    // button2
+    // 
+    this->button2->Location = System::Drawing::Point(648, 144);
+    this->button2->Name = L"button2";
+    this->button2->Size = System::Drawing::Size(86, 21);
+    this->button2->TabIndex = 8;
+    this->button2->Text = L"Stop";
+    this->button2->UseVisualStyleBackColor = true;
+    this->button2->Click += gcnew System::EventHandler(this, &Form1::button2_Click);
+    // 
     // Form1
     // 
     this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
     this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
     this->ClientSize = System::Drawing::Size(754, 662);
+    this->Controls->Add(this->button2);
     this->Controls->Add(this->label3);
     this->Controls->Add(this->textBox3);
     this->Controls->Add(this->button1);
@@ -307,6 +335,7 @@ namespace Modelling {
                textBox3->Location = System::Drawing::Point(pictureBox1->Width + label3->Width, label3->Location.Y);
 
                button1->Location = System::Drawing::Point(textBox2->Location.X, button1->Location.Y);
+               button2->Location = System::Drawing::Point(textBox2->Location.X, button2->Location.Y);
                m_drawer->SetTargetResolution(pictureBox1->Size.Width, pictureBox1->Size.Height);
 
                ClearPicture();
@@ -325,16 +354,19 @@ namespace Modelling {
 
                double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text) / 360,
                  gamma = System::Double::Parse(textBox3->Text);
-               model.CalcGamma(Model::curr_gamma, Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
+               model.SetParams(Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
+               to_draw = true;
+               //model.CalcGamma(Model::curr_gamma, Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
+               //model.UpdatePoints();
                //CalcColors(Model::colors_by_phi, Model::colors_by_psi, Model::curr_gamma, model);
 
-               ClearPicture();
-               if(!Model::curr_gamma.empty())
-                 {
-                 //FillColors(Model::colors_by_phi);
-                 DrawPoints();
-                 }
-               Invalidate(true);
+               //ClearPicture();
+               //if(!Model::curr_gamma.empty())
+               //  {
+               //  //FillColors(Model::colors_by_phi);
+               //  DrawPoints();
+               //  }
+               //Invalidate(true);
                }
 
              //-------------------------------------
@@ -345,6 +377,30 @@ namespace Modelling {
                DrawContours();
                }
 
+private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) 
+           {
+           ClearPicture();
+           DrawAxes();
+           DrawContours();
+           if(to_draw)
+             model.CalcGamma(Model::curr_gamma);
+           if(!Model::curr_gamma.empty())
+               {
+               FillColors(Model::colors_by_phi);
+               DrawPoints();
+               }
+           if(to_draw)
+             model.UpdatePoints();
+           Invalidate(true);
+           }
+private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
+           {
+           to_draw = false;
+           CalcColors(Model::colors_by_phi, Model::colors_by_psi, Model::curr_gamma, model, false);
+           FillColors(Model::colors_by_phi);
+           //DrawAxes();
+           //DrawContours();
+           }
 };
 }
 

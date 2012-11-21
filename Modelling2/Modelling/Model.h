@@ -10,11 +10,21 @@ class Model
     Model();
     
     void Init();
-    void CalcGamma(std::vector<double>& o_gamma, const Vector2D& i_velocity, double i_gamma);
+    void SetParams(const Vector2D& i_velocity, double i_gamma)
+      {
+      m_velocity = i_velocity;
+      m_gamma = i_gamma;
+      }
+    void CalcGamma(std::vector<double>& o_gamma);
     double CalcPhi(const Vector2D& i_point, const std::vector<double>& i_gamma) const;
     double CalcPsi(const Vector2D& i_point, const std::vector<double>& i_gamma) const;
+    Vector2D CalcSpeed(const Vector2D& i_point) const;
 
+    Vector2D V(const Vector2D& i_vect1, const Vector2D& i_vect2) const;
     Vector2D V(int i_idx, const Vector2D&  i_vect) const;
+    Vector2D GetPoint(int i_idx);
+
+    void UpdatePoints();
     
     const Contours& GetContours() const;
     const Vector2D& GetVelocity() const;
@@ -23,6 +33,8 @@ class Model
     static std::vector<double> curr_gamma;
     static std::vector<std::vector<int>> colors_by_phi;
     static std::vector<std::vector<int>> colors_by_psi;
+    static std::vector<std::vector<Vector2D>> off_points;
+    static std::vector<std::vector<double>> off_gamma;
 
   private:
 
