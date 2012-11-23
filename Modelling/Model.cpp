@@ -51,6 +51,16 @@ const Contours& Model::GetContours() const
 
 //-------------------------------------
 
+double Model::GetGamma(int i_i, int i_j) const
+  {
+  int summ = 0;
+  for(int i = 0; i < i_i; ++i)
+    summ += m_contours[i].size();
+  return curr_gamma[summ + i_j];
+  }
+
+//
+
 void Model::CalcGamma(std::vector<double>& o_gamma)
   {
   if(!o_gamma.empty())
@@ -234,11 +244,11 @@ void Model::UpdatePoints()
   double dt  = 1. / CalcSpeed(off_points[0][0]).Length2();
 
   for(std::size_t i = 0; i < off_points.size(); ++i)
-    for(std::size_t j = 0; j < off_points[i].size(); ++j)
-      if(dt > 1. / CalcSpeed(off_points[i][j]).Length2())
-        dt = 1. / CalcSpeed(off_points[i][j]).Length2();
+    if(dt > 1. / CalcSpeed(off_points[i][0]).Length2())
+      dt = 1. / CalcSpeed(off_points[i][0]).Length2();
 
-  dt = Math::Sqrt(dt) * m_delta;
+  dt = Math::Sqrt(dt) * m_delta * 2;
+  double D = 2 * m_delta;
   Vector2D vec;
   for(std::size_t i = 0; i < off_points.size(); ++i)
     {
@@ -247,37 +257,37 @@ void Model::UpdatePoints()
         vec = off_points[i][j];
         off_points[i][j] = off_points[i][j] + dt * CalcSpeed(off_points[i][j]);
       
-        if(Math::Abs(off_points[i][j].Y() + 0.5) < m_delta && off_points[i][j].X() > -0.5 - m_delta && off_points[i][j].X() < 0.5 + m_delta)
+        if(Math::Abs(off_points[i][j].Y() + 0.5) < D && off_points[i][j].X() > -0.5 - D && off_points[i][j].X() < 0.5 + D)
           {
           if(vec.Y() < -0.5)
-            off_points[i][j].Y() = -0.5 - m_delta;
+            off_points[i][j].Y() = -0.5 - D;
           else
-            off_points[i][j].Y() = -0.5 + m_delta;
+            off_points[i][j].Y() = -0.5 + D;
 
           }
       
-        if(Math::Abs(off_points[i][j].X() + 0.5) < m_delta && off_points[i][j].Y() > -0.5 - m_delta  && off_points[i][j].Y() < 0.5 + m_delta)
+        if(Math::Abs(off_points[i][j].X() + 0.5) < D && off_points[i][j].Y() > -0.5 - D  && off_points[i][j].Y() < 0.5 + D)
           {
           if(vec.X() < -0.5)
-            off_points[i][j].X() = -0.5 - m_delta;
+            off_points[i][j].X() = -0.5 - D;
           else
-            off_points[i][j].X() = -0.5 + m_delta;
+            off_points[i][j].X() = -0.5 + D;
           }
 
-        if(Math::Abs(off_points[i][j].X()) < m_delta && off_points[i][j].Y() > -0.5 - m_delta && off_points[i][j].Y() < 0.5 + m_delta)
+        if(Math::Abs(off_points[i][j].X()) < D && off_points[i][j].Y() > -0.5 - D && off_points[i][j].Y() < 0.5 + D)
           {
           if(vec.X() < 0)
-            off_points[i][j].X() = -m_delta;
+            off_points[i][j].X() = -D;
           else
-            off_points[i][j].X() = m_delta;
+            off_points[i][j].X() = D;
           }
 
-        if(Math::Abs(off_points[i][j].X() - 0.5) < m_delta && off_points[i][j].Y() > -0.5 - m_delta && off_points[i][j].Y() < 0.5 + m_delta)
+        if(Math::Abs(off_points[i][j].X() - 0.5) < D && off_points[i][j].Y() > -0.5 - D && off_points[i][j].Y() < 0.5 + D)
           {
           if(vec.X() < 0.5)
-            off_points[i][j].X() = 0.5 - m_delta;
+            off_points[i][j].X() = 0.5 - D;
           else
-            off_points[i][j].X() = 0.5 + m_delta;
+            off_points[i][j].X() = 0.5 + D;
           }
         }
       off_points[i].push_back(off_points[i][0] + dt * CalcSpeed(off_points[i][0]));
@@ -286,13 +296,13 @@ void Model::UpdatePoints()
         if(i == 0)
           off_gamma[0].push_back(curr_gamma[0]);
         if(i == 1)
-          off_gamma[1].push_back(curr_gamma[29]);
+          off_gamma[1].push_back(curr_gamma[30]);
         if(i == 2)
-          off_gamma[2].push_back(curr_gamma[59]);
+          off_gamma[2].push_back(curr_gamma[60]);
         if(i == 3)
-          off_gamma[3].push_back(curr_gamma[89]);
+          off_gamma[3].push_back(curr_gamma[90]);
         if(i == 4)
-          off_gamma[4].push_back(curr_gamma[90]);
+          off_gamma[4].push_back(curr_gamma[91]);
         }
     }
 
