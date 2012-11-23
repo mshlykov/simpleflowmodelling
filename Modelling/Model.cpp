@@ -75,9 +75,7 @@ void Model::CalcGamma(std::vector<double>& o_gamma)
     
     for(std::size_t j = 0; j < off_points.size(); ++j)
       for(std::size_t k = 1; k < off_points[j].size(); ++k)
-        {
         b(i, 0) -= off_gamma[j][k] * V(m_colloc[i], off_points[j][k]) * m_normals[i];
-        }
 
     A(M - 1, i) = 1;
 
@@ -246,9 +244,8 @@ void Model::UpdatePoints()
   for(std::size_t i = 0; i < off_points.size(); ++i)
     if(dt > 1. / CalcSpeed(off_points[i][0]).Length2())
       dt = 1. / CalcSpeed(off_points[i][0]).Length2();
-
-  dt = Math::Sqrt(dt) * m_delta * 2;
   double D = 2 * m_delta;
+  dt = Math::Sqrt(dt) * D;
   Vector2D vec;
   for(std::size_t i = 0; i < off_points.size(); ++i)
     {
