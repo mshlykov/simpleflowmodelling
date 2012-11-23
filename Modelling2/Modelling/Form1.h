@@ -129,10 +129,10 @@ namespace Modelling {
       int N = 20, M = model.GetSize();
       double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY(), scaler = 1;
+      Vector2D summ;
       for(int i = 1; i < N - 1; ++i)
         for(int j = 1; j < N - 1; ++j)
           {
-          Vector2D summ = model.GetVelocity();
           double n_x = minx + i * (maxx - minx) / (N - 1), 
             n_y = miny + j * (maxy - miny) / (N - 1);
           summ = model.CalcSpeed(Vector2D(n_x, n_y));
@@ -143,7 +143,19 @@ namespace Modelling {
           }
       for(std::size_t i = 0; i < Model::off_points.size(); ++i)
         for(std::size_t j = 1; j < Model::off_points[i].size(); ++j)
-          m_drawer->DrawPoint(e, Model::off_points[i][j].X(), Model::off_points[i][j].Y(), 0xFF00F0FF);
+          if(Model::off_gamma[i][j] > 0)
+            m_drawer->DrawPoint(e, Model::off_points[i][j].X(), Model::off_points[i][j].Y(), 0xFF00F0FF);
+          else
+            m_drawer->DrawPoint(e, Model::off_points[i][j].X(), Model::off_points[i][j].Y(), 0xFF000FFF);
+
+      const Contours& cont = model.GetContours();
+      int t = 0;
+      for(std::size_t i = 0; i < cont.size(); ++i)
+        for(std::size_t j = 0; j < cont[i].size(); ++j, ++t)
+          if(Model::curr_gamma[t] > 0)
+            m_drawer->DrawPoint(e, cont[i][j].X(), cont[i][j].Y(), 0xFF00F0FF);
+          else
+            m_drawer->DrawPoint(e, cont[i][j].X(), cont[i][j].Y(), 0xFF000FFF);
       }
 
     void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, std::vector<std::vector<int>>& o_colors_by_psi, 
@@ -276,6 +288,7 @@ namespace Modelling {
     // timer1
     // 
     this->timer1->Enabled = true;
+    this->timer1->Interval = 1000;
     this->timer1->Tick += gcnew System::EventHandler(this, &Form1::timer1_Tick);
     // 
     // button2
@@ -344,16 +357,16 @@ namespace Modelling {
                model.SetParams(Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
                to_draw = true;
                
-               for(int i = 0; i < Model::off_points.size(); ++i)
+               for(std::size_t i = 0; i < Model::off_points.size(); ++i)
                  {
                  Model::off_points[i].clear();
                  Model::off_gamma[i].clear();
                  }
-               Model::off_points[0].push_back(Vector2D(-0.5, 0.5));
-               Model::off_points[1].push_back(Vector2D(-0.5, -0.5));
-               Model::off_points[2].push_back(Vector2D(0.5, -0.5));
-               Model::off_points[3].push_back(Vector2D(0.5, 0.5));
-               Model::off_points[4].push_back(Vector2D(0, 0.5));
+               Model::off_points[0].push_back(model.GetContours()[0][0]);
+               Model::off_points[1].push_back(model.GetContours()[0][30]);
+               Model::off_points[2].push_back(model.GetContours()[0][60]);
+               Model::off_points[3].push_back(model.GetContours()[0][90]);
+               Model::off_points[4].push_back(model.GetContours()[1][0]);
                Model::off_gamma[0].push_back(0);
                Model::off_gamma[1].push_back(0);
                Model::off_gamma[2].push_back(0);
@@ -367,8 +380,8 @@ namespace Modelling {
 
     private: System::Void Form1_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) 
                {
-               DrawAxes();
-               DrawContours();
+               //DrawAxes();
+               //DrawContours();
                }
 
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) 

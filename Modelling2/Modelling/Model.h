@@ -23,7 +23,7 @@ class Model
     Vector2D V(const Vector2D& i_vect1, const Vector2D& i_vect2) const;
     Vector2D V(int i_idx, const Vector2D&  i_vect) const;
     Vector2D GetPoint(int i_idx);
-
+    double Model::GetGamma(int i_i, int i_j) const;
     void UpdatePoints();
     
     const Contours& GetContours() const;
