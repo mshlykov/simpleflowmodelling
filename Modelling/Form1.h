@@ -21,7 +21,7 @@ namespace Modelling {
 		{
 			InitializeComponent();
 		  pictureBox1->Image = gcnew Bitmap(pictureBox1->Size.Width, pictureBox1->Size.Height);
-		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -2, -2, 2, 2);
+		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -2, -10, 10, 10);
 			//
 			//TODO: Add the constructor code here
 			//
@@ -141,30 +141,29 @@ namespace Modelling {
           m_drawer->DrawLine(pen, e, n_x, n_y, n_x + summ.X() * scaler, n_y + summ.Y() * scaler);
           m_drawer->DrawPoint(e, n_x, n_y, 0xFF000000);
           }
-      for(std::size_t i = 0; i < Model::off_points.size(); ++i)
-        for(std::size_t j = 1; j < Model::off_points[i].size(); ++j)
-          if(Model::off_gamma[i][j] > 0)
-            m_drawer->DrawPoint(e, Model::off_points[i][j].X(), Model::off_points[i][j].Y(), 0xFF00F0FF);
+      for(std::size_t i = 0; i < model.GetOffPoints().size(); ++i)
+        for(std::size_t j = 0; j < model.GetOffPoints()[i].size(); ++j)
+          if(model.GetOffGamma()[i][j] > 0)
+            m_drawer->DrawPoint(e, model.GetOffPoints()[i][j].X(), model.GetOffPoints()[i][j].Y(), 0xFF00F0FF);
           else
-            m_drawer->DrawPoint(e, Model::off_points[i][j].X(), Model::off_points[i][j].Y(), 0xFF000FFF);
+            m_drawer->DrawPoint(e, model.GetOffPoints()[i][j].X(), model.GetOffPoints()[i][j].Y(), 0xFF000FFF);
 
       const Contours& cont = model.GetContours();
       int t = 0;
       for(std::size_t i = 0; i < cont.size(); ++i)
         for(std::size_t j = 0; j < cont[i].size(); ++j, ++t)
-          if(Model::curr_gamma[t] > 0)
+          if(model.GetCurrGamma()[t] > 0)
             m_drawer->DrawPoint(e, cont[i][j].X(), cont[i][j].Y(), 0xFF00F0FF);
           else
             m_drawer->DrawPoint(e, cont[i][j].X(), cont[i][j].Y(), 0xFF000FFF);
       }
 
-    void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, std::vector<std::vector<int>>& o_colors_by_psi, 
-      const std::vector<double>& i_gamma, const Model& i_model, bool i_mode)
+    void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, const Model& i_model, bool i_mode)
       {
       o_colors_by_phi.clear();
       int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 16, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
-      double max_phi =i_mode ? i_model.CalcPhi(Vector2D(), i_gamma) : i_model.CalcPsi(Vector2D(), i_gamma), 
-        min_phi = i_mode ? i_model.CalcPhi(Vector2D(), i_gamma) : i_model.CalcPsi(Vector2D(), i_gamma) , 
+      double max_phi =i_mode ? i_model.CalcPhi(Vector2D()) : i_model.CalcPsi(Vector2D()), 
+        min_phi = i_mode ? i_model.CalcPhi(Vector2D()) : i_model.CalcPsi(Vector2D()) , 
         maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       Vector2D curr_point;
@@ -178,7 +177,7 @@ namespace Modelling {
         for(int j = 0; j < N; ++j)
           {
           curr_point.Y() = miny + j * (maxy - miny) / (N - 1);
-          phi_matr[i].push_back(i_mode ? i_model.CalcPhi(curr_point, i_gamma) : i_model.CalcPsi(curr_point, i_gamma));
+          phi_matr[i].push_back(i_mode ? i_model.CalcPhi(curr_point) : i_model.CalcPsi(curr_point));
           
           if(min_phi > phi_matr[i][j])
             min_phi = phi_matr[i][j];
@@ -254,7 +253,7 @@ namespace Modelling {
     // 
     // label2
     // 
-    this->label2->Location = System::Drawing::Point(600, 65);
+    this->label2->Location = System::Drawing::Point(603, 68);
     this->label2->Name = L"label2";
     this->label2->Size = System::Drawing::Size(46, 20);
     this->label2->TabIndex = 4;
@@ -288,7 +287,6 @@ namespace Modelling {
     // timer1
     // 
     this->timer1->Enabled = true;
-    this->timer1->Interval = 1000;
     this->timer1->Tick += gcnew System::EventHandler(this, &Form1::timer1_Tick);
     // 
     // button2
@@ -337,14 +335,6 @@ namespace Modelling {
                button1->Location = System::Drawing::Point(textBox2->Location.X, button1->Location.Y);
                button2->Location = System::Drawing::Point(textBox2->Location.X, button2->Location.Y);
                m_drawer->SetTargetResolution(pictureBox1->Size.Width, pictureBox1->Size.Height);
-
-               ClearPicture();
-               if(!Model::curr_gamma.empty())
-                 {
-                 FillColors(Model::colors_by_phi);
-                 DrawPoints();
-                 }
-               Invalidate(true);
                }
 
              //-------------------------------------
@@ -357,21 +347,7 @@ namespace Modelling {
                model.SetParams(Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
                to_draw = true;
                
-               for(std::size_t i = 0; i < Model::off_points.size(); ++i)
-                 {
-                 Model::off_points[i].clear();
-                 Model::off_gamma[i].clear();
-                 }
-               Model::off_points[0].push_back(model.GetContours()[0][0]);
-               Model::off_points[1].push_back(model.GetContours()[0][30]);
-               Model::off_points[2].push_back(model.GetContours()[0][60]);
-               Model::off_points[3].push_back(model.GetContours()[0][90]);
-               Model::off_points[4].push_back(model.GetContours()[1][0]);
-               Model::off_gamma[0].push_back(0);
-               Model::off_gamma[1].push_back(0);
-               Model::off_gamma[2].push_back(0);
-               Model::off_gamma[3].push_back(0);
-               Model::off_gamma[4].push_back(0);
+               model.ReInit();
                Model::colors_by_phi.clear();
 
                }
@@ -386,22 +362,23 @@ namespace Modelling {
 
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) 
            {
-           ClearPicture();
            if(to_draw)
-             model.CalcGamma(Model::curr_gamma);
-           if(!Model::curr_gamma.empty())
+             model.CalcGamma();
+           ClearPicture();
+           if(!model.GetCurrGamma().empty())
                {
+               DrawAxes();
                FillColors(Model::colors_by_phi);
                DrawPoints();
                }
+           Invalidate(true);
            if(to_draw)
              model.UpdatePoints();
-           Invalidate(true);
            }
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
            {
            to_draw = false;
-           CalcColors(Model::colors_by_phi, Model::colors_by_psi, Model::curr_gamma, model, false);
+           CalcColors(Model::colors_by_phi, model, false);
            FillColors(Model::colors_by_phi);
            }
 };
