@@ -57,7 +57,16 @@ class Matrix
     double Norm1(int&,int&);
 		double SqEuclNorm();
 		Matrix PseudoInverse();
-  
+    bool CheckNull() const
+      {
+      for(int i = 0; i < row; ++i)
+        for(int j = 0; j < col; ++j)
+          if(std::abs(els[i][j]) > 0.00000001)
+            return false;
+
+      return true;
+      
+      }
   private:
 
     double **els;
