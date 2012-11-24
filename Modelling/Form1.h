@@ -335,6 +335,16 @@ namespace Modelling {
                button1->Location = System::Drawing::Point(textBox2->Location.X, button1->Location.Y);
                button2->Location = System::Drawing::Point(textBox2->Location.X, button2->Location.Y);
                m_drawer->SetTargetResolution(pictureBox1->Size.Width, pictureBox1->Size.Height);
+
+               if(!model.GetCurrGamma().empty())
+                 {
+                 ClearPicture();
+                 FillColors(Model::colors_by_phi);
+                 DrawAxes();
+                 DrawPoints();
+                 Invalidate(true);
+                 }
+
                }
 
              //-------------------------------------
@@ -356,22 +366,20 @@ namespace Modelling {
 
     private: System::Void Form1_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) 
                {
-               //DrawAxes();
-               //DrawContours();
+
                }
 
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) 
            {
            if(to_draw)
              model.CalcGamma();
-           ClearPicture();
-           if(!model.GetCurrGamma().empty())
-               {
+           if(!model.GetCurrGamma().empty() && to_draw)
+             {
+               ClearPicture();
                DrawAxes();
-               FillColors(Model::colors_by_phi);
                DrawPoints();
-               }
-           Invalidate(true);
+               Invalidate(true);
+             }
            if(to_draw)
              model.UpdatePoints();
            }
@@ -380,6 +388,9 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
            to_draw = false;
            CalcColors(Model::colors_by_phi, model, false);
            FillColors(Model::colors_by_phi);
+           DrawAxes();
+           DrawPoints();
+           Invalidate(true);
            }
 };
 }
