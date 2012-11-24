@@ -46,7 +46,6 @@ void Model::Init()
 
 void Model::ReInit()
   {
-  if(!model.m_off_points[0].empty())
     for(std::size_t i = 0; i < model.m_off_points.size(); ++i)
       {
       model.m_off_points[i].clear();
