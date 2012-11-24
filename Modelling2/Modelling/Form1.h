@@ -21,7 +21,7 @@ namespace Modelling {
 		{
 			InitializeComponent();
 		  pictureBox1->Image = gcnew Bitmap(pictureBox1->Size.Width, pictureBox1->Size.Height);
-		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -2, -10, 10, 10);
+		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -2, -2, 2, 2);
 			//
 			//TODO: Add the constructor code here
 			//
@@ -325,25 +325,25 @@ namespace Modelling {
 
     private: System::Void Form1_Resize(System::Object^  sender, System::EventArgs^  e) 
                {
-               ReshapePictureBox1();
-               label2->Location = System::Drawing::Point(pictureBox1->Width, label2->Location.Y);
-               label3->Location = System::Drawing::Point(pictureBox1->Width, label3->Location.Y);
+                 ReshapePictureBox1();
+                 label2->Location = System::Drawing::Point(pictureBox1->Width, label2->Location.Y);
+                 label3->Location = System::Drawing::Point(pictureBox1->Width, label3->Location.Y);
 
-               textBox2->Location = System::Drawing::Point(pictureBox1->Width + label2->Width, label2->Location.Y);
-               textBox3->Location = System::Drawing::Point(pictureBox1->Width + label3->Width, label3->Location.Y);
+                 textBox2->Location = System::Drawing::Point(pictureBox1->Width + label2->Width, label2->Location.Y);
+                 textBox3->Location = System::Drawing::Point(pictureBox1->Width + label3->Width, label3->Location.Y);
 
-               button1->Location = System::Drawing::Point(textBox2->Location.X, button1->Location.Y);
-               button2->Location = System::Drawing::Point(textBox2->Location.X, button2->Location.Y);
-               m_drawer->SetTargetResolution(pictureBox1->Size.Width, pictureBox1->Size.Height);
+                 button1->Location = System::Drawing::Point(textBox2->Location.X, button1->Location.Y);
+                 button2->Location = System::Drawing::Point(textBox2->Location.X, button2->Location.Y);
+                 m_drawer->SetTargetResolution(pictureBox1->Size.Width, pictureBox1->Size.Height);
 
-               if(!model.GetCurrGamma().empty())
-                 {
-                 ClearPicture();
-                 FillColors(Model::colors_by_phi);
-                 DrawAxes();
-                 DrawPoints();
-                 Invalidate(true);
-                 }
+                 if(!model.GetCurrGamma().empty())
+                   {
+                   ClearPicture();
+                   FillColors(Model::colors_by_phi);
+                   DrawAxes();
+                   DrawPoints();
+                   Invalidate(true);
+                   }
 
                }
 
@@ -351,15 +351,13 @@ namespace Modelling {
 
     private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) 
                {
-
-               double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text) / 360,
-                 gamma = System::Double::Parse(textBox3->Text);
-               model.SetParams(Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
-               to_draw = true;
+                 double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text) / 360,
+                   gamma = System::Double::Parse(textBox3->Text);
+                 model.SetParams(Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
+                 to_draw = true;
                
-               model.ReInit();
-               Model::colors_by_phi.clear();
-
+                 model.ReInit();
+                 Model::colors_by_phi.clear();
                }
 
              //-------------------------------------
@@ -371,26 +369,26 @@ namespace Modelling {
 
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) 
            {
-           if(to_draw)
-             model.CalcGamma();
-           if(!model.GetCurrGamma().empty() && to_draw)
-             {
-               ClearPicture();
-               DrawAxes();
-               DrawPoints();
-               Invalidate(true);
-             }
-           if(to_draw)
-             model.UpdatePoints();
+             if(to_draw)
+               model.CalcGamma();
+             if(!model.GetCurrGamma().empty() && to_draw)
+               {
+                 ClearPicture();
+                 DrawAxes();
+                 DrawPoints();
+                 Invalidate(true);
+               }
+             if(to_draw)
+               model.UpdatePoints();
            }
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
            {
-           to_draw = false;
-           CalcColors(Model::colors_by_phi, model, false);
-           FillColors(Model::colors_by_phi);
-           DrawAxes();
-           DrawPoints();
-           Invalidate(true);
+             to_draw = false;
+             CalcColors(Model::colors_by_phi, model, true);
+             FillColors(Model::colors_by_phi);
+             DrawAxes();
+             DrawPoints();
+             Invalidate(true);
            }
 };
 }
