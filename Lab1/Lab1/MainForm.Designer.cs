@@ -102,12 +102,13 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(541, 88);
+            this.button8.Location = new System.Drawing.Point(541, 126);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(146, 32);
             this.button8.TabIndex = 9;
             this.button8.Text = "Довідка";
             this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // dataGridView1
             // 
@@ -133,7 +134,8 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(541, 126);
+            this.button1.Enabled = false;
+            this.button1.Location = new System.Drawing.Point(541, 88);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(146, 32);
             this.button1.TabIndex = 10;

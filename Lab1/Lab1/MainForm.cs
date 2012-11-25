@@ -30,7 +30,6 @@ namespace Lab1
             {
                 button2.Enabled = false;
                 button3.Enabled = false;
-                button1.Enabled = false;
                 dataGridView1.ReadOnly = true;
                 this.dataGridView1.AllowUserToAddRows = false;
                 this.dataGridView1.AllowUserToDeleteRows = false;
@@ -40,7 +39,6 @@ namespace Lab1
             {
                 button2.Enabled = true;
                 button3.Enabled = true;
-                button1.Enabled = true;
                 dataGridView1.ReadOnly = false;
                 this.dataGridView1.AllowUserToAddRows = true;
                 this.dataGridView1.AllowUserToDeleteRows = true;
@@ -48,7 +46,8 @@ namespace Lab1
             this.listBox1.Items.Clear();
             this.Show();
             DBStorage.Open();
-            //DBStorage.ExecuteQuery("SELECT * FROM Працівник", dataGridView1);
+            button1.Enabled = false;
+            dataGridView1.DataSource = null;
             DBStorage.ExecuteQuery("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG='AIS' AND TABLE_NAME!='sysdiagrams'", listBox1);
         }
 
@@ -78,6 +77,7 @@ namespace Lab1
 
         private void button6_Click(object sender, EventArgs e)
         {
+            button1.Enabled = false;
             FormController.GetSearchForm().ShowDialog();
         }
 
@@ -88,6 +88,7 @@ namespace Lab1
                 dataGridView1.ReadOnly = false;
                 this.dataGridView1.AllowUserToAddRows = true;
                 this.dataGridView1.AllowUserToDeleteRows = true;
+                this.button1.Enabled = true;
             }
             DBStorage.ExecuteQuery("SELECT * FROM " + (string)listBox1.SelectedItem, dataGridView1);
         }
@@ -201,9 +202,12 @@ namespace Lab1
                     }
                 }
             }
+        }
 
-            
-            //System.String.Format("INSERT INTO {0} VALUES {1}", 1, 2, 3, 4);
+        private void button8_Click(object sender, EventArgs e)
+        {
+            About ab = new About();
+            ab.ShowDialog();
         }
     }
 }
