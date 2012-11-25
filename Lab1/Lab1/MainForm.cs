@@ -209,5 +209,10 @@ namespace Lab1
             About ab = new About();
             ab.ShowDialog();
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("Help.txt");
+        }
     }
 }
