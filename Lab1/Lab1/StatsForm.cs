@@ -23,8 +23,6 @@ namespace Lab1
             DBStorage.ExecuteQuery("SELECT ПІП FROM Працівник", listBox1);
             listBox1.SelectedItem = listBox1.Items[0];
             FillDiag();
-            //chart1.Series["Series1"].Points.AddXY(System.DateTime.Today, 5000);
-            //chart1.Series["Series1"].Points.AddXY(System.DateTime.Today, 3000);
         }
 
         private void FillDiag()
