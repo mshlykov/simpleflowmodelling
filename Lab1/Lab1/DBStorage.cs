@@ -28,6 +28,7 @@ namespace Lab1
                 query_str = sr.ReadLine();
                 m_user_queries.Add(name_str, query_str);
             }
+            sr.Close();
         }
 
         public static void Open()
@@ -98,6 +99,7 @@ namespace Lab1
                 comm2 = new OleDbCommand(@"RESTORE DATABASE AIS FROM DISK = '" + Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.bak" + "\' WITH REPLACE", m_connection);
             comm1.ExecuteNonQuery();
             comm2.ExecuteNonQuery();
+            m_connection.ChangeDatabase("AIS");
             System.Windows.Forms.MessageBox.Show("Відновлення завершене.");
         }
 

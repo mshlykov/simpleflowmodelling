@@ -47,7 +47,6 @@
             // 
             // chart1
             // 
-            chartArea1.AxisX.Title = "Роки";
             chartArea1.AxisY.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
             chartArea1.AxisY.Title = "Зарплатня, грн.";
             chartArea1.Name = "ChartArea1";

@@ -63,6 +63,7 @@ namespace Lab1
                 words = str.Split(' ');
                 m_users.Add(words[0], System.Tuple.Create(words[1],words[2]));
             }
+            sr.Close();
         }
     }
 }
