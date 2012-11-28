@@ -48,5 +48,25 @@ namespace Lab1
         {
             FillDiag();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            double[] a = new double[chart1.Series["Series1"].Points.Count - 1];
+            double summ = 0;
+            for (int i = 0; i < a.Length; ++i)
+            {
+                summ += chart1.Series["Series1"].Points[i].YValues[0] * chart1.Series["Series1"].Points[i].YValues[0];
+                a[i] = chart1.Series["Series1"].Points[i].YValues[0];
+            }
+            for (int i = 0; i < a.Length; ++i)
+            {
+                a[i] *= chart1.Series["Series1"].Points[a.Length].YValues[0];
+                a[i] /= summ;
+            }
+            summ = 0;
+            for (int i = 0; i < a.Length; ++i)
+                summ += a[i] * chart1.Series["Series1"].Points[i + 1].YValues[0];
+            chart1.Series["Series1"].Points.AddY(summ);
+        }
     }
 }
