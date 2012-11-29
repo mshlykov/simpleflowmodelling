@@ -28,7 +28,7 @@ namespace Lab1
         private void FillDiag()
         {
             chart1.Series["Series1"].Points.Clear();
-            OleDbDataReader rdr = DBStorage.ExecuteQuery("SELECT * FROM Зміна_зарплатні WHERE ПІП = '" + listBox1.SelectedItem + "\'");
+            OleDbDataReader rdr = DBStorage.ExecuteQuery("SELECT * FROM Зміна_зарплатні WHERE ПІП = '" + listBox1.SelectedItem + "\' ORDER BY дата");
             if (rdr.HasRows)
             {
                 while (rdr.Read())

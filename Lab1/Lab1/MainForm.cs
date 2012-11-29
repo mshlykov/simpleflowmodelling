@@ -214,5 +214,37 @@ namespace Lab1
         {
             System.Diagnostics.Process.Start("Help.txt");
         }
+
+        private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            string curr_table = listBox1.SelectedItem.ToString(), keydata = "";
+            if (!e.Row.IsNewRow)
+            {
+                    
+
+                    if (curr_table == "Працівник")
+                    {
+                        keydata = String.Format("ПІП = \'{0}\'", e.Row.Cells[0].FormattedValue.ToString());
+                    }
+                    else if (curr_table == "Посада")
+                    {
+                        keydata = String.Format("назва = \'{0}\'", e.Row.Cells[0].FormattedValue.ToString());
+                    }
+                    else if (curr_table == "Зміна_зарплатні" || curr_table == "Зміна_посади")
+                    {
+                        keydata = String.Format("ID = {0}", e.Row.Cells[0].FormattedValue.ToString());
+                    }
+                    else if (curr_table == "Кафедра")
+                    {
+                        keydata = String.Format("назва = \'{0}\' AND факультет = \'{1}\'", e.Row.Cells[0].FormattedValue.ToString(), e.Row.Cells[1].FormattedValue.ToString());
+                    }
+                    else if (curr_table == "Прац_каф")
+                    {
+                        keydata = String.Format("ПІП = \'{0}\' AND назва = \'{0}\' AND факультет = \'{1}\'", e.Row.Cells[0].FormattedValue.ToString(), e.Row.Cells[1].FormattedValue.ToString(), e.Row.Cells[1].FormattedValue.ToString());
+                    }
+            }
+                DBStorage.ExecuteNonQuery(String.Format("DELETE FROM {0} WHERE {1}", curr_table, keydata));
+                
+        }
     }
 }
