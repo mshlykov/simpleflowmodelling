@@ -33,7 +33,7 @@ namespace Lab1
             {
                 while (rdr.Read())
                 {
-                    chart1.Series["Series1"].Points.AddY(rdr.GetInt32(3));
+                    chart1.Series["Series1"].Points.AddY(rdr.GetInt32(2));
                 }
             }
         }

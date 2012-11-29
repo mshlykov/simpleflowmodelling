@@ -14,14 +14,13 @@ namespace Lab1
     {
         private static OleDbConnection m_connection;
         public static Dictionary<string, string> m_user_queries;
-
         static DBStorage()
         {
-            m_connection = new OleDbConnection(@"Provider=SQLOLEDB;Server=.\SQLExpress;Trusted_Connection=Yes;");
+            m_connection = new OleDbConnection(@"provider=sqloledb;server=.\sqlexpress;trusted_connection=yes;");
+            //m_connection = new OleDbConnection(@"provider=sqloledb;Server=ms-sql-6.in-solve.ru; Database=1gb_x_aisdata; uid=1gb_aisdata; pwd= 05031991;");
             m_user_queries = new Dictionary<string, string>();
-
             System.IO.StreamReader sr = new System.IO.StreamReader("UserQueries.txt");
-            String name_str, query_str;
+            String name_str = null, query_str = null;
             while (!sr.EndOfStream)
             {
                 name_str = sr.ReadLine();
@@ -33,13 +32,13 @@ namespace Lab1
 
         public static void Open()
         {
-            m_connection.Open();
-            m_connection.ChangeDatabase("AIS");
+                m_connection.Open();
+                m_connection.ChangeDatabase("AIS");
         }
 
         public static void Close()
         {
-            m_connection.Close();
+               m_connection.Close();
         }
 
         public static OleDbDataReader ExecuteQuery(string i_query_text)
