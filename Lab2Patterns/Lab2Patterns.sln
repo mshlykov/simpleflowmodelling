@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab2Patterns", "Lab2Patterns\Lab2Patterns.vcxproj", "{9881A5CB-4595-4BA5-B28C-86A07B9F103E}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Lab2Patterns\\Lab2Patterns.vcxproj
+		SccProjectName1 = Lab2Patterns
+		SccLocalPath1 = Lab2Patterns
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9881A5CB-4595-4BA5-B28C-86A07B9F103E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9881A5CB-4595-4BA5-B28C-86A07B9F103E}.Debug|Win32.Build.0 = Debug|Win32
+		{9881A5CB-4595-4BA5-B28C-86A07B9F103E}.Release|Win32.ActiveCfg = Release|Win32
+		{9881A5CB-4595-4BA5-B28C-86A07B9F103E}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
