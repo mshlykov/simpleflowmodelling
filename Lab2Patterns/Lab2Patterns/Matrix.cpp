@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Matrix.h"
 namespace MatrSpace
 {
@@ -12,7 +11,7 @@ namespace MatrSpace
 		for(int i=0;i<row;i++)
 			for(int j=0;j<col;j++)els[i][j]=0;
 	}
-	Matrix::Matrix(Matrix&b)
+	Matrix::Matrix(const Matrix&b)
 	{
 		row=b.row;
 		col=b.col;
@@ -59,6 +58,10 @@ namespace MatrSpace
 	{
 		return els[i][j];
 	}
+  const double& Matrix::operator()(int i,int j) const
+    {
+     return els[i][j];
+    }
 	ostream& operator <<(ostream&os,Matrix& A)
 	{
 		for(int i=0;i<A.row;i++)
@@ -113,7 +116,7 @@ namespace MatrSpace
 	{
 		return (-1)*A;
 	}
-	Matrix& Matrix::operator =(Matrix& B)
+	Matrix& Matrix::operator =(const Matrix& B)
 	{
 		if(els!=0)
 		{
@@ -132,7 +135,7 @@ namespace MatrSpace
 			els[i]=new double[col];
 		for(int i=0;i<row;i++)
 			for(int j=0;j<col;j++)els[i][j]=B.els[i][j];
-		return B;
+		return *this;
 	}
 	Matrix Matrix::Transp()
 	{

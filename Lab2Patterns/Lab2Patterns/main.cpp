@@ -11,7 +11,9 @@
 #include<ctime>
 #include "glut.h"
 #include "Vector2D.h"
+#include "Matrix.h"
 #include "ellipsoids.hpp"
+#include "Algos.h"
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include "RandNums.h"
@@ -109,8 +111,20 @@ void main(int argc, char *argv[])
     f >> points(1,i);
     }
   f.close();
-  Minim::KhachiyanAlgo(points, 0.000001, 100, Q, centre);
-  CalcBorder();
+  Minim::KhachiyanAlgo(points, 0.001, 100, Q, centre);
+  //std:: cout << Q(0,0) << " " << Q(0,1) << '\n' << Q(1,0) << " " << Q(1,1) << '\n';
+  
+  MatrSpace::Matrix Q1 = ConvToMatr(Q), centroid_ellipse, centroid, vec(2, 1);
+  std::vector<MatrSpace::Matrix> points1;
+  points1.resize(points.size2(), MatrSpace::Matrix(2,1));
+  for(int i = 0; i < points.size1(); ++i)
+    {
+    points1[i](0, 0) = points(0, i);
+    points1[i](1, 0) = points(1, i);
+    }
+  
+  CentroidEllipse(centroid_ellipse, centroid, Q1, ConvToMatr(centre), points1);
+  //CalcBorder();
   
   glutInit(&argc, argv); 
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); 

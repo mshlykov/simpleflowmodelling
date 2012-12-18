@@ -13,7 +13,7 @@ class Matrix
 		
     Matrix():els(0),row(0),col(0){};
 		Matrix(int,int);
-		Matrix(Matrix&);
+		Matrix(const Matrix&);
 		
     ~Matrix();
 		
@@ -22,6 +22,7 @@ class Matrix
     void Resize(int,int);
 		
     double& operator()(int,int);
+    const double& operator()(int,int) const;
 		
     int GetRsize()
 		{
@@ -45,7 +46,7 @@ class Matrix
 		friend bool operator ==(Matrix&,Matrix&);
 		
     friend void getCoef(Matrix&);
-		Matrix& operator =(Matrix&);
+		Matrix& operator =(const Matrix&);
 		
     Matrix Transp();
 		

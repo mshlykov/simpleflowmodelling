@@ -31,6 +31,9 @@
     <ClCompile Include="RandNums.cpp">
       <Filter>RandNums</Filter>
     </ClCompile>
+    <ClCompile Include="Algos.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ellipsoids.hpp">
@@ -44,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="RandNums.h">
       <Filter>RandNums</Filter>
+    </ClInclude>
+    <ClInclude Include="Algos.h">
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
