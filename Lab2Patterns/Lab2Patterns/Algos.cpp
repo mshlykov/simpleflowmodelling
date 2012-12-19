@@ -34,9 +34,6 @@ void CentroidEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const Ma
   invscale(0, 0) = 1 / scale(0,0);
   invscale(1, 1) = 1 / scale(1,1);
   
-  Q = scale * Q * scale;
-  std::cout << Q;
-  transf = rot * scale;
   invtransf = invscale * transprot;
   
   for(int i = 0; i < points.size(); ++i)
@@ -50,9 +47,7 @@ void CentroidEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const Ma
   
   for(int i = 0; i < points.size(); ++i)
     centroid = centroid + points[i];
-  std::cout<<centroid;
   centroid = (1.0 / points.size()) * centroid;
-  std::cout<<centroid;
   rad = (points[0] - centroid).SqEuclNorm();
   
   for(int i = 1; i < points.size(); ++i)
@@ -65,7 +60,11 @@ void CentroidEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const Ma
   Q(0, 0) = Q(1, 1) = 1 / rad;
   Q(0, 1) = Q(1, 0) = 0;  
   Q = rot * invscale * Q * invscale * transprot;
-  o_centre = transf * centroid;
+  o_centre = rot * scale * centroid;
   o_centre = o_centre + centre;
-  std::cout << o_centre;
+  }
+
+void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const MatrSpace::Matrix& i_ellipsematr, const MatrSpace::Matrix& centre, std::vector<MatrSpace::Matrix> points)
+  {
+
   }
