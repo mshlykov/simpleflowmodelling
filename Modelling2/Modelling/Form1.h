@@ -287,6 +287,7 @@ namespace Modelling {
     // timer1
     // 
     this->timer1->Enabled = true;
+    this->timer1->Interval = 200;
     this->timer1->Tick += gcnew System::EventHandler(this, &Form1::timer1_Tick);
     // 
     // button2
@@ -384,7 +385,7 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
            {
              to_draw = false;
-             CalcColors(Model::colors_by_phi, model, true);
+             CalcColors(Model::colors_by_phi, model, false);
              FillColors(Model::colors_by_phi);
              DrawAxes();
              DrawPoints();

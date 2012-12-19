@@ -267,7 +267,7 @@ void Model::UpdatePoints()
           {
           new_points[i].push_back(m_off_points[i][j] + dt * CalcSpeed(m_off_points[i][j]));
       
-          if(std::abs(new_points[i][j].Y() + 0.5) < D && new_points[i][j].X() > -0.5 - D && new_points[i][j].X() < 0.5 + D)
+          if(std::abs(new_points[i][j].Y() + 0.5) < D && new_points[i][j].X() > -0.5 && new_points[i][j].X() < 0.5)
             {
             if(m_off_points[i][j].Y() < -0.5)
               new_points[i][j].Y() = -0.5 - D;
@@ -276,7 +276,7 @@ void Model::UpdatePoints()
 
             }
       
-          if(std::abs(new_points[i][j].X() + 0.5) < D && new_points[i][j].Y() > -0.5 - D  && new_points[i][j].Y() < 0.5 + D)
+          if(std::abs(new_points[i][j].X() + 0.5) < D && new_points[i][j].Y() > -0.5  && new_points[i][j].Y() < 0.5)
             {
             if(m_off_points[i][j].X() < -0.5)
               new_points[i][j].X() = -0.5 - D;
@@ -284,7 +284,7 @@ void Model::UpdatePoints()
               new_points[i][j].X() = -0.5 + D;
             }
 
-          if(std::abs(new_points[i][j].X()) < D && new_points[i][j].Y() > -0.5 - D && new_points[i][j].Y() < 0.5 + D)
+          if(std::abs(new_points[i][j].X()) < D && new_points[i][j].Y() > -0.5 && new_points[i][j].Y() < 0.5)
             {
             if(m_off_points[i][j].X() < 0)
               new_points[i][j].X() = -D;
@@ -292,7 +292,7 @@ void Model::UpdatePoints()
               new_points[i][j].X() = D;
             }
 
-          if(std::abs(new_points[i][j].X() - 0.5) < D && new_points[i][j].Y() > -0.5 - D && new_points[i][j].Y() < 0.5 + D)
+          if(std::abs(new_points[i][j].X() - 0.5) < D && new_points[i][j].Y() > -0.5 && new_points[i][j].Y() < 0.5)
             {
             if(m_off_points[i][j].X() < 0.5)
               new_points[i][j].X() = 0.5 - D;
