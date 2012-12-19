@@ -118,6 +118,8 @@ namespace MatrSpace
 	}
 	Matrix& Matrix::operator =(const Matrix& B)
 	{
+  if(&B == this)
+    return *this;
 		if(els!=0)
 		{
 			for(int i=0;i<row;i++)

@@ -21,21 +21,25 @@ GLint Width = 512, Height = 512;
 int K1;
 boost::numeric::ublas::vector<double> centre(2);
 boost::numeric::ublas::matrix<double> points, Q(2, 2);
-std::vector<Vector2D> border;
+std::vector<std::vector<Vector2D>> border(2);
 double xl = -10, xr = 10, yb = -10, yt = 10;
-
+MatrSpace::Matrix centroid_ellipse, centroid;
 
 void CalcBorder()
   {
   double h = 0.01, eps = 0.0001;
-  border.resize(2, 0);
   for(double i = xl; i < xr; i += h)
     for(double j = yb; j < yt; j += h)
       {
       if(std::abs( Q(0,0) * (i - centre(0)) * (i - centre(0)) + 
         (Q(0,1) + Q(1,0)) * (i - centre(0)) * (j - centre(1)) + 
         Q(1,1) * (j - centre(1)) * (j - centre(1)) - 1) < eps)
-        border.push_back(Vector2D(i,j));
+        border[0].push_back(Vector2D(i,j));
+
+      if( std::abs( centroid_ellipse(0,0) * (i - centroid(0, 0)) * (i - centroid(0, 0)) + 
+        (centroid_ellipse(0, 1) + centroid_ellipse(1,0)) * (i - centroid(0, 0)) * (j - centroid(1, 0)) + 
+        centroid_ellipse(1, 1) * (j - centroid(1, 0)) * (j - centroid(1, 0)) - 1) < eps)
+        border[1].push_back(Vector2D(i,j));
       }
   }
 
@@ -59,6 +63,29 @@ void Display(void)
   glVertex2d(0, yt);
   glEnd();
 
+  ////учебная выборка первого класса
+  //glColor3d(1,0,0);
+  //glBegin(GL_POINTS);
+  //for(std::size_t i = 0; i < K1; ++i)
+  //  glVertex2d(points(0, i), points(1, i));
+  //glEnd();
+
+  glColor3d(0,1,0);
+
+  double PI = 3.14159;
+
+  glBegin(GL_POINTS);
+  for(std::size_t i = 0; i < border[0].size(); ++i)
+    glVertex2d(border[0][i].X(), border[0][i].Y());
+  glEnd();
+
+  glColor3d(0,0,1);
+
+  glBegin(GL_POINTS);
+  for(std::size_t i = 0; i < border[1].size(); ++i)
+    glVertex2d(border[1][i].X(), border[1][i].Y());
+  glEnd();
+
   //учебная выборка первого класса
   glColor3d(1,0,0);
   glBegin(GL_POINTS);
@@ -66,14 +93,6 @@ void Display(void)
     glVertex2d(points(0, i), points(1, i));
   glEnd();
 
-  glColor3d(0,1,0);
-
-  double PI = 3.14159;
-
-  glBegin(GL_POINTS);
-  for(std::size_t i = 0; i < border.size(); ++i)
-    glVertex2d(border[i].X(), border[i].Y());
-  glEnd();
 
   glutSwapBuffers();
   }
@@ -111,20 +130,21 @@ void main(int argc, char *argv[])
     f >> points(1,i);
     }
   f.close();
-  Minim::KhachiyanAlgo(points, 0.001, 100, Q, centre);
-  //std:: cout << Q(0,0) << " " << Q(0,1) << '\n' << Q(1,0) << " " << Q(1,1) << '\n';
-  
-  MatrSpace::Matrix Q1 = ConvToMatr(Q), centroid_ellipse, centroid, vec(2, 1);
+  Minim::KhachiyanAlgo(points, 0.000001, 100, Q, centre);
+  //std:: cout << Q(0,0) << " " << Q(0,1) << '\n' << Q(1,0) << " " << Q(1,1) << "\n\n";
+  //std:: cout << centre(0) << " " << centre(1) << "\n\n";
+  MatrSpace::Matrix Q1 = ConvToMatr(Q), vec(2, 1);
+  //std::cout << Q1;
   std::vector<MatrSpace::Matrix> points1;
   points1.resize(points.size2(), MatrSpace::Matrix(2,1));
-  for(int i = 0; i < points.size1(); ++i)
+  for(int i = 0; i < points.size2(); ++i)
     {
     points1[i](0, 0) = points(0, i);
     points1[i](1, 0) = points(1, i);
     }
   
   CentroidEllipse(centroid_ellipse, centroid, Q1, ConvToMatr(centre), points1);
-  //CalcBorder();
+  CalcBorder();
   
   glutInit(&argc, argv); 
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); 
