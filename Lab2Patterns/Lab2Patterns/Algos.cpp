@@ -19,52 +19,80 @@ MatrSpace::Matrix ConvToMatr(const boost::numeric::ublas::vector<double>& i_vect
 
 void CentroidEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const MatrSpace::Matrix& i_ellipsematr, const MatrSpace::Matrix& centre, std::vector<MatrSpace::Matrix> points)
   {
-  double phi = 0.5 * std::atan(2 * i_ellipsematr(0, 1) / (i_ellipsematr(1, 1) - i_ellipsematr(0, 0)));
+    double phi = 0.5 * std::atan(2 * i_ellipsematr(0, 1) / (i_ellipsematr(1, 1) - i_ellipsematr(0, 0)));
   
-  MatrSpace::Matrix rot(2, 2), transprot(2, 2), scale(2, 2), invscale(2, 2), transf(2, 2), invtransf(2, 2);
+    MatrSpace::Matrix rot(2, 2), transprot(2, 2), scale(2, 2), invscale(2, 2), transf(2, 2), invtransf(2, 2);
   
-  transprot(0, 0) = transprot(1, 1) = rot(1, 1) = rot(0, 0) = std::cos(phi);
-  transprot(1, 0) = rot(0, 1) = std::sin(phi);
-  transprot(0, 1) = rot(1, 0) = -rot(0, 1);
+    transprot(0, 0) = transprot(1, 1) = rot(1, 1) = rot(0, 0) = std::cos(phi);
+    transprot(1, 0) = rot(0, 1) = std::sin(phi);
+    transprot(0, 1) = rot(1, 0) = -rot(0, 1);
   
-  Q = transprot * i_ellipsematr * rot;
+    Q = transprot * i_ellipsematr * rot;
   
-  scale(0, 0) = 1 / std::sqrt(Q(0, 0));
-  scale(1, 1) = 1 / std::sqrt(Q(1, 1));
-  invscale(0, 0) = 1 / scale(0,0);
-  invscale(1, 1) = 1 / scale(1,1);
+    scale(0, 0) = 1 / std::sqrt(Q(0, 0));
+    scale(1, 1) = 1 / std::sqrt(Q(1, 1));
+    invscale(0, 0) = 1 / scale(0,0);
+    invscale(1, 1) = 1 / scale(1,1);
   
-  invtransf = invscale * transprot;
+    invtransf = invscale * transprot;
   
-  for(int i = 0; i < points.size(); ++i)
-    {
-    points[i] = points[i] - centre;
-    points[i] = invtransf * points[i];
-    }
+    for(int i = 0; i < points.size(); ++i)
+      {
+      points[i] = points[i] - centre;
+      points[i] = invtransf * points[i];
+      }
   
-  double rad = 0;
-  MatrSpace::Matrix centroid(2,1);
+    double rad = 0;
+    MatrSpace::Matrix centroid(2,1);
   
-  for(int i = 0; i < points.size(); ++i)
-    centroid = centroid + points[i];
-  centroid = (1.0 / points.size()) * centroid;
-  rad = (points[0] - centroid).SqEuclNorm();
+    for(int i = 0; i < points.size(); ++i)
+      centroid = centroid + points[i];
+    centroid = (1.0 / points.size()) * centroid;
+    rad = (points[0] - centroid).SqEuclNorm();
   
-  for(int i = 1; i < points.size(); ++i)
-    {
-    double newrad = (points[i] - centroid).SqEuclNorm();
-    if(rad < newrad)
-      rad = newrad;
-    }
+    for(int i = 1; i < points.size(); ++i)
+      {
+      double newrad = (points[i] - centroid).SqEuclNorm();
+      if(rad < newrad)
+        rad = newrad;
+      }
   
-  Q(0, 0) = Q(1, 1) = 1 / rad;
-  Q(0, 1) = Q(1, 0) = 0;  
-  Q = rot * invscale * Q * invscale * transprot;
-  o_centre = rot * scale * centroid;
-  o_centre = o_centre + centre;
+    Q(0, 0) = Q(1, 1) = 1 / rad;
+    Q(0, 1) = Q(1, 0) = 0;  
+    Q = rot * invscale * Q * invscale * transprot;
+    o_centre = rot * scale * centroid;
+    o_centre = o_centre + centre;
   }
 
 void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const MatrSpace::Matrix& i_ellipsematr, const MatrSpace::Matrix& centre, std::vector<MatrSpace::Matrix> points)
   {
+    int idx1, idx2, idx3, idx4;
+    double dist = (points[0] - points[1]).SqEuclNorm();
+    for(int i = 0; i < points.size(); ++i)
+      for(int j = i + i; j < points.size(); ++j)
+        if(dist < (points[i] - points[j]).SqEuclNorm())
+          {
+          idx1 = i;
+          idx2 = j;
+          dist = (points[i] - points[j]).SqEuclNorm();
+          }
+    double dev1 = 0, dev2 = 0, 
+      a = - (points[idx1] - points[idx2])(1, 0),
+      b = (points[idx1] - points[idx2])(0, 0),
+      c = - a * points[idx1](0, 0) + b * points[idx1](1, 0);
+    for(int i = 0; i < points.size(); ++i)
+      {
+        if(dev1 > a * points[i](0, 0) + b * points[i](1, 0) + c)
+          {
+            dev1 = a * points[i](0, 0) + b * points[i](1, 0) + c;
+            idx3 = i;
+          }
+        
+        if(dev2 < a * points[i](0, 0) + b * points[i](1, 0) + c)
+          {
+            dev1 = a * points[i](0, 0) + b * points[i](1, 0) + c;
+            idx4 = i;
+          }
+      }
 
   }
