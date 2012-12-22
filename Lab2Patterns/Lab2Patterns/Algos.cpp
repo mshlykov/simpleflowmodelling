@@ -49,7 +49,7 @@ void CentroidEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const Ma
   
     invtransf = invscale * transprot;
     MatrSpace::Matrix centroid(2,1);
-    for(int i = 0; i < points.size(); ++i)
+    for(std::size_t i = 0; i < points.size(); ++i)
       {
       points[i] = points[i] - centre;
       points[i] = invtransf * points[i];
@@ -59,7 +59,7 @@ void CentroidEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const Ma
     double rad = 0;
     rad = (points[0] - centroid).SqEuclNorm();
   
-    for(int i = 1; i < points.size(); ++i)
+    for(std::size_t i = 1; i < points.size(); ++i)
       {
       double newrad = (points[i] - centroid).SqEuclNorm();
       if(rad < newrad)
@@ -77,8 +77,8 @@ void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, std::vecto
   {
     int idx1, idx2;
     double dist = (points[0] - points[1]).SqEuclNorm();
-    for(int i = 0; i < points.size(); ++i)
-      for(int j = i + 1; j < points.size(); ++j)
+    for(std::size_t i = 0; i < points.size(); ++i)
+      for(std::size_t j = i + 1; j < points.size(); ++j)
         if(dist < (points[i] - points[j]).SqEuclNorm())
           {
           idx1 = i;
@@ -95,7 +95,7 @@ void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, std::vecto
       b = vect(0, 0),
       c = - a * points[idx1](0, 0) - b * points[idx1](1, 0);
 
-    for(int i = 0; i < points.size(); ++i)
+    for(std::size_t i = 0; i < points.size(); ++i)
       {
         if(dev1 > a * points[i](0, 0) + b * points[i](1, 0) + c)
           dev1 = a * points[i](0, 0) + b * points[i](1, 0) + c;
@@ -130,7 +130,7 @@ void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, std::vecto
     invtransf = invscale * invrot;
     MatrSpace::Matrix translate_vector = points[idx2], centroid(2, 1); 
 
-    for(int i = 0; i < points.size(); ++i)
+    for(std::size_t i = 0; i < points.size(); ++i)
       {
       points[i] = points[i] - translate_vector;
       points[i] = invtransf * points[i];
@@ -141,7 +141,7 @@ void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, std::vecto
     double rad = 0;
     rad = (points[0] - centroid).SqEuclNorm();
 
-    for(int i = 1; i < points.size(); ++i)
+    for(std::size_t i = 1; i < points.size(); ++i)
       {
       double newrad = (points[i] - centroid).SqEuclNorm();
       if(rad < newrad)
@@ -163,7 +163,7 @@ void KhachiyanEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, std::ve
     boost::numeric::ublas::vector<double> centre(2);
     boost::numeric::ublas::matrix<double> points1, Q1(2, 2);
     points1.resize(2,points.size());
-    for(int i = 0; i < points1.size2(); ++i)
+    for(std::size_t i = 0; i < points1.size2(); ++i)
       {
       points1(0,i) = points[i](0, 0);
       points1(1,i) = points[i](1, 0);

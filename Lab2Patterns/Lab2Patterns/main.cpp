@@ -171,7 +171,7 @@ void Test()
         f <<"\n\n";
          
         g << i << '\n';
-        for(int j = 0; j < points.size(); ++j)
+        for(std::size_t j = 0; j < points.size(); ++j)
           g << points[j](0, 0) << "  " << points[j](1, 0) << '\n';
         g << "\n\n";
         d1 = EllipseVol(khachiyan_ellipse1);
