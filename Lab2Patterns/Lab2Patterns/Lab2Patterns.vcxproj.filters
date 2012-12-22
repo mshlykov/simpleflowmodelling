@@ -52,4 +52,10 @@
       <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Комментарии к проекту.txt" />
+    <None Include="Teaching.txt" />
+    <None Include="TestedEllipses.txt" />
+    <None Include="TestedSamples.txt" />
+  </ItemGroup>
 </Project>

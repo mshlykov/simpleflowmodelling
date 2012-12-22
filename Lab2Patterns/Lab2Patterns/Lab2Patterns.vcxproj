@@ -94,6 +94,12 @@
     <ClInclude Include="RandNums.h" />
     <ClInclude Include="Vector2D.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Комментарии к проекту.txt" />
+    <None Include="Teaching.txt" />
+    <None Include="TestedEllipses.txt" />
+    <None Include="TestedSamples.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
