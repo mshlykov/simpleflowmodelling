@@ -3,11 +3,6 @@
 #include <vector>
 double a = 0, b = 1, a1 = a - 1, b1 = b + 1;
 
-struct coefs
-  {
-  double a2, a1, a0, b, t;
-  };
-
 
 double Derivative(double x, double s, double (* _func)(double, double))
   {
