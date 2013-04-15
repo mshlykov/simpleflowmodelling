@@ -18,11 +18,17 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Analyzer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="mathaux.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Analyzer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="mathaux.h">
       <Filter>Source Files</Filter>
     </ClInclude>
