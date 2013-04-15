@@ -2,7 +2,7 @@
 #include <vector>
 struct coefs
   {
-  double a2, a1, a0, b, t;
+    double a2, a1, a0, b, t;
   };
 
 class Analyzer
