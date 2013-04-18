@@ -11,7 +11,7 @@ class Analyzer
     Analyzer(double i_a = 0, double i_b = 1);
     void SetG(double (*i_G)(double x, double s));
     void Makematrix(const std::vector<coefs>& i_coefs);
-    const std::vector<std::vector<double>>& GetMatrix();
+    const std::vector<std::vector<double>>& GetMatrix() const;
   
   private:
     double m_a, m_b, 

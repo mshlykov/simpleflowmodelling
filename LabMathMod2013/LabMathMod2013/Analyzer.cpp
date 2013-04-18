@@ -62,7 +62,7 @@ void Analyzer::Makematrix(const std::vector<coefs>& i_coefs)
     }
   }
 
-const std::vector<std::vector<double>>& Analyzer::GetMatrix()
+const std::vector<std::vector<double>>& Analyzer::GetMatrix() const
   {
     return m_linsys;
   }
