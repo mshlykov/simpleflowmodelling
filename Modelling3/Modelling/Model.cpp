@@ -36,8 +36,11 @@ void Model::Init()
       m_normals.push_back((m_contours[i][j + 1] - m_contours[i][j]).Normalize().GetOrthogonal());
       }
   m_delta *= 0.49;
+  m_dt = 0;
   m_contours[1].pop_back();
 
+  m_prev_gamma.resize(m_colloc.size() + 1);
+  m_curr_gamma.resize(m_colloc.size() + 1);
   m_off_gamma.resize(5);
   m_off_points.resize(5);
   }
@@ -51,6 +54,10 @@ void Model::ReInit()
       model.m_off_points[i].clear();
       model.m_off_gamma[i].clear();
       }
+
+    for(std::size_t i = 0; i < model.m_prev_gamma.size(); ++i)
+      m_prev_gamma[i] = 0;
+    m_dt = 0;
   }
 
 //-------------------------------------
@@ -74,8 +81,8 @@ double Model::GetGamma(int i_i, int i_j) const
 
 void Model::CalcGamma()
   {
-    if(!m_curr_gamma.empty())
-      m_curr_gamma.clear();
+    /*if(!m_curr_gamma.empty())
+      m_curr_gamma.clear();*/
 
     int M = m_colloc.size() + 1;  
     MatrSpace::Matrix A(M, M), b(M, 1);
@@ -100,9 +107,12 @@ void Model::CalcGamma()
       for(std::size_t k = 0; k < m_off_points[j].size(); ++k)
         b(M - 1, 0) -= m_off_gamma[j][k];
     b = A.SolveGauss(b);
-    m_curr_gamma.resize(M);
+    //m_curr_gamma.resize(M);
     for(std::size_t i = 0; i < m_curr_gamma.size(); ++i)
+      {
+      m_prev_gamma[i] = m_curr_gamma[i];
       m_curr_gamma[i] = b(i, 0);
+      }
   }
 
 //-------------------------------------
@@ -244,28 +254,28 @@ Vector2D Model::GetPoint(int i_idx) const
 
 void Model::UpdatePoints()
   {
-    double dt  = 1. / CalcSpeed(m_contours[0][0]).Length2();
+    m_dt  = 1. / CalcSpeed(m_contours[0][0]).Length2();
 
-    if(dt > 1. / CalcSpeed(m_contours[0][30]).Length2())
-      dt = 1. / CalcSpeed(m_contours[0][30]).Length2();
+    if(m_dt > 1. / CalcSpeed(m_contours[0][30]).Length2())
+      m_dt = 1. / CalcSpeed(m_contours[0][30]).Length2();
 
-    if(dt > 1. / CalcSpeed(m_contours[0][60]).Length2())
-      dt = 1. / CalcSpeed(m_contours[0][60]).Length2();
+    if(m_dt > 1. / CalcSpeed(m_contours[0][60]).Length2())
+      m_dt = 1. / CalcSpeed(m_contours[0][60]).Length2();
   
-    if(dt > 1. / CalcSpeed(m_contours[0][90]).Length2())
-      dt = 1. / CalcSpeed(m_contours[0][90]).Length2();
+    if(m_dt > 1. / CalcSpeed(m_contours[0][90]).Length2())
+      m_dt = 1. / CalcSpeed(m_contours[0][90]).Length2();
   
-    if(dt > 1. / CalcSpeed(m_contours[1][0]).Length2())
-      dt = 1. / CalcSpeed(m_contours[1][0]).Length2();
+    if(m_dt > 1. / CalcSpeed(m_contours[1][0]).Length2())
+      m_dt = 1. / CalcSpeed(m_contours[1][0]).Length2();
 
     double D = 2 * m_delta;
-    dt = std::sqrt(dt) * D;
+    m_dt = std::sqrt(m_dt) * D;
     std::vector<std::vector<Vector2D>> new_points(m_off_points.size());
     for(std::size_t i = 0; i < m_off_points.size(); ++i)
       {
         for(std::size_t j = 0; j < m_off_points[i].size(); ++j)
           {
-          new_points[i].push_back(m_off_points[i][j] + dt * CalcSpeed(m_off_points[i][j]));
+          new_points[i].push_back(m_off_points[i][j] + m_dt * CalcSpeed(m_off_points[i][j]));
       
           if(std::abs(new_points[i][j].Y() + 0.5) < D && new_points[i][j].X() > -0.5 && new_points[i][j].X() < 0.5)
             {
@@ -302,11 +312,11 @@ void Model::UpdatePoints()
           }
       }
 
-    new_points[0].push_back(m_contours[0][0] + dt * CalcSpeed(m_contours[0][0]));
-    new_points[1].push_back(m_contours[0][30] + dt * CalcSpeed(m_contours[0][30]));
-    new_points[2].push_back(m_contours[0][60] + dt * CalcSpeed(m_contours[0][60]));
-    new_points[3].push_back(m_contours[0][90] + dt * CalcSpeed(m_contours[0][90]));
-    new_points[4].push_back(m_contours[1][0] + dt * CalcSpeed(m_contours[1][0]));
+    new_points[0].push_back(m_contours[0][0] + m_dt * CalcSpeed(m_contours[0][0]));
+    new_points[1].push_back(m_contours[0][30] + m_dt * CalcSpeed(m_contours[0][30]));
+    new_points[2].push_back(m_contours[0][60] + m_dt * CalcSpeed(m_contours[0][60]));
+    new_points[3].push_back(m_contours[0][90] + m_dt * CalcSpeed(m_contours[0][90]));
+    new_points[4].push_back(m_contours[1][0] + m_dt * CalcSpeed(m_contours[1][0]));
     m_off_gamma[0].push_back(m_curr_gamma[0]);
     m_off_gamma[1].push_back(m_curr_gamma[30]);
     m_off_gamma[2].push_back(m_curr_gamma[60]);
