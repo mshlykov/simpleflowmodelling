@@ -39,6 +39,11 @@ void Model::Init()
   m_dt = 0;
   m_contours[1].pop_back();
 
+  m_corners.push_back(m_contours[0][0]);
+  m_corners.push_back(m_contours[0][30]);
+  m_corners.push_back(m_contours[0][60]);
+  m_corners.push_back(m_contours[0][90]);
+  m_corners.push_back(m_contours[1][0]);
   m_prev_gamma.resize(m_colloc.size() + 1);
   m_curr_gamma.resize(m_colloc.size() + 1);
   m_off_gamma.resize(5);
@@ -194,6 +199,35 @@ double Model::CalcPsi(const Vector2D& i_point) const
     summ /= (4 * Math::PI);
     summ += i_point.Y() * m_velocity.X() - i_point.X() * m_velocity.Y();
     return summ;
+  }
+
+//-------------------------------------
+
+double Model::CalcCp(const Vector2D& i_point) const
+  {
+    double dphi = 0, Pi = 3.14159;
+    Vector2D xstar, diff, orth;
+    int s = 0;
+    for(std::size_t i = 0; i < m_contours.size(); s += m_contours[i].size(), ++i)
+      for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
+        {
+          diff = m_contours[i][j] + m_contours[i][j + 1];
+          xstar = 0.5 * diff;
+          orth = i_point - diff;
+          dphi += (m_curr_gamma[s + j] - m_prev_gamma[s + j]) / (2 * Pi * m_dt) * (orth.GetOrthogonal()* diff) / (orth.Length2());
+        }
+    for(std::size_t i = 0; i < m_off_points.size(); ++i)
+      {
+        diff = m_corners[i] - m_off_points[i][m_off_points[i].size() - 1];
+        xstar = 0.5 * diff;
+        orth = i_point - diff;
+        dphi += m_off_gamma[i][m_off_gamma[i].size() - 1] / (2 * Pi * m_dt) * (orth.GetOrthogonal()* diff) / (orth.Length2());
+      }
+    for(std::size_t i = 0; i < m_off_points.size(); ++i)
+      for(std::size_t j = 0; j < m_off_points[i].size(); ++j)
+        dphi += m_off_gamma[i][j] * (V(i_point, m_off_points[i][j]) * CalcSpeed(m_off_points[i][j]));
+    return  1 - CalcSpeed(i_point).Length2() / 2 - 2 * dphi;
+
   }
 
 //-------------------------------------
