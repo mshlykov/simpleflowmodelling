@@ -36,11 +36,11 @@ class Model
 
 private:
     
-    std::vector<double> m_curr_gamma;
+    std::vector<double> m_curr_gamma, m_prev_gamma;
     std::vector<std::vector<double>> m_off_gamma;
     Contours m_contours, m_off_points;
     Points m_colloc, m_normals;
-    double m_delta, m_gamma;
+    double m_delta, m_gamma, m_dt;
     Vector2D m_velocity;
   };
 
