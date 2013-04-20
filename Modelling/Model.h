@@ -15,6 +15,7 @@ class Model
     void CalcGamma();
     double CalcPhi(const Vector2D& i_point) const;
     double CalcPsi(const Vector2D& i_point) const;
+    double CalcCp(const Vector2D& i_point) const;
     Vector2D CalcSpeed(const Vector2D& i_point) const;
 
     Vector2D V(const Vector2D& i_vect1, const Vector2D& i_vect2) const;
@@ -39,7 +40,7 @@ private:
     std::vector<double> m_curr_gamma, m_prev_gamma;
     std::vector<std::vector<double>> m_off_gamma;
     Contours m_contours, m_off_points;
-    Points m_colloc, m_normals;
+    Points m_colloc, m_normals, m_corners;
     double m_delta, m_gamma, m_dt;
     Vector2D m_velocity;
   };

@@ -158,12 +158,13 @@ namespace Modelling {
             m_drawer->DrawPoint(e, cont[i][j].X(), cont[i][j].Y(), 0xFF000FFF);
       }
 
-    void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, const Model& i_model, bool i_mode)
+    void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, const Model& i_model, int i_mode)
       {
       o_colors_by_phi.clear();
-      int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 16, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
-      double max_phi =i_mode ? i_model.CalcPhi(Vector2D()) : i_model.CalcPsi(Vector2D()), 
-        min_phi = i_mode ? i_model.CalcPhi(Vector2D()) : i_model.CalcPsi(Vector2D()) , 
+      int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 32, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
+      double 
+        max_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())), 
+        min_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())) , 
         maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       Vector2D curr_point;
@@ -177,7 +178,7 @@ namespace Modelling {
         for(int j = 0; j < N; ++j)
           {
           curr_point.Y() = miny + j * (maxy - miny) / (N - 1);
-          phi_matr[i].push_back(i_mode ? i_model.CalcPhi(curr_point) : i_model.CalcPsi(curr_point));
+          phi_matr[i].push_back(i_mode == 0 ? i_model.CalcPhi(curr_point) : (i_mode == 1 ? i_model.CalcPsi(curr_point) : i_model.CalcCp(curr_point)));
           
           if(min_phi > phi_matr[i][j])
             min_phi = phi_matr[i][j];
@@ -385,7 +386,7 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
            {
              to_draw = false;
-             CalcColors(Model::colors_by_phi, model, false);
+             CalcColors(Model::colors_by_phi, model, 2);
              FillColors(Model::colors_by_phi);
              DrawAxes();
              DrawPoints();
