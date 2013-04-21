@@ -48,20 +48,26 @@ void Model::Init()
   m_curr_gamma.resize(m_colloc.size() + 1);
   m_off_gamma.resize(5);
   m_off_points.resize(5);
+
+  //for(int i = 0; i < m_curr_gamma.size(); ++i)
+    //m_curr_gamma[i] = 0;
   }
 
 //-------------------------------------
 
 void Model::ReInit()
   {
-    for(std::size_t i = 0; i < model.m_off_points.size(); ++i)
+    for(std::size_t i = 0; i < m_off_points.size(); ++i)
       {
       model.m_off_points[i].clear();
       model.m_off_gamma[i].clear();
       }
 
-    for(std::size_t i = 0; i < model.m_prev_gamma.size(); ++i)
-      m_prev_gamma[i] = 0;
+    for(std::size_t i = 0; i < m_prev_gamma.size(); ++i)
+      {
+        m_curr_gamma[i] = 0;
+        m_prev_gamma[i] = 0;
+      }
     m_dt = 0;
   }
 
@@ -235,9 +241,19 @@ double Model::CalcCp(const Vector2D& i_point) const
 Vector2D Model::CalcSpeed(const Vector2D& i_point) const
   {
     Vector2D res = m_velocity;
-    int M = GetSize();
-    for(int i = 0; i < M; ++i)
-      res = res + m_curr_gamma[i] * V(i, i_point);
+    int /*M = GetSize(),*/ move = 0;
+    /*for(int i = 0; i < M; ++i)
+      res = res + m_curr_gamma[i] * V(i, i_point);*/
+
+    for(std::size_t i = 0; i < m_contours.size(); ++i)
+      {
+        for(std::size_t j = 0; j < m_contours[i].size(); ++j)
+          {
+          res = res + m_curr_gamma[move + j] * V(i_point, m_contours[i][j]);
+          }
+        move += m_contours[i].size();
+      }
+
     for(std::size_t i = 0; i < m_off_points.size(); ++i)
       for(std::size_t j = 0; j < m_off_points[i].size(); ++j)
         res = res + m_off_gamma[i][j] * V(i_point, m_off_points[i][j]);
