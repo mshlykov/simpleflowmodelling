@@ -161,7 +161,7 @@ namespace Modelling {
     void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, const Model& i_model, int i_mode)
       {
       o_colors_by_phi.clear();
-      int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 32, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
+      int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 16, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
       double 
         max_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())), 
         min_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())) , 
@@ -386,7 +386,7 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
            {
              to_draw = false;
-             CalcColors(Model::colors_by_phi, model, 2);
+             CalcColors(Model::colors_by_phi, model, 1);
              FillColors(Model::colors_by_phi);
              DrawAxes();
              DrawPoints();
