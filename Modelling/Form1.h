@@ -21,7 +21,7 @@ namespace Modelling {
 		{
 			InitializeComponent();
 		  pictureBox1->Image = gcnew Bitmap(pictureBox1->Size.Width, pictureBox1->Size.Height);
-		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -2, -2, 2, 2);
+		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -1.5, -1.5, 1.5, 1.5);
 			//
 			//TODO: Add the constructor code here
 			//
@@ -39,7 +39,7 @@ namespace Modelling {
 		}
   private: System::Windows::Forms::PictureBox^  pictureBox1;
            Drawer^ m_drawer;
-           bool to_draw;
+           bool to_draw, first_time;
 
   private: System::Windows::Forms::TextBox^  textBox2;
 
@@ -49,6 +49,9 @@ namespace Modelling {
   private: System::Windows::Forms::Label^  label3;
   private: System::Windows::Forms::Timer^  timer1;
   private: System::Windows::Forms::Button^  button2;
+  private: System::Windows::Forms::RadioButton^  radioButton1;
+  private: System::Windows::Forms::RadioButton^  radioButton2;
+  private: System::Windows::Forms::RadioButton^  radioButton3;
   private: System::ComponentModel::IContainer^  components;
   protected: 
 
@@ -178,22 +181,25 @@ namespace Modelling {
         for(int j = 0; j < N; ++j)
           {
           curr_point.Y() = miny + j * (maxy - miny) / (N - 1);
-          phi_matr[i].push_back(i_mode == 0 ? i_model.CalcPhi(curr_point) : (i_mode == 1 ? i_model.CalcPsi(curr_point) : i_model.CalcCp(curr_point)));
+          phi_matr[i].push_back(i_mode == 0 ? i_model.CalcPhiSec(curr_point) : (i_mode == 1 ? i_model.CalcPsi(curr_point) : i_model.CalcCp(curr_point)));
           
           if(min_phi > phi_matr[i][j])
             min_phi = phi_matr[i][j];
 
           if(max_phi < phi_matr[i][j])
             max_phi = phi_matr[i][j];
+          if(i_mode == 2 && phi_matr[i][j] > 1)
+            phi_matr[i][j] = 1;
           }
         }
-
+      if (i_mode == 2 && max_phi > 1)
+        max_phi = 1;
       for(int i = 0; i < N; ++i)
         for(int j = 0; j < N; ++j)
           {
-          int phi_color = static_cast<int>(number_of_colors * (phi_matr[i][j] - min_phi) / (max_phi - min_phi));
-          
-          o_colors_by_phi[i].push_back(yellow_color - phi_color * 0x1000);
+          double coef = (phi_matr[i][j] - min_phi) / (max_phi - min_phi);
+          int diff = static_cast<int>(0xFF * coef); 
+          o_colors_by_phi[i].push_back(0xFF000000 + diff + (diff << 8) + (diff << 16));
           }
 
       }
@@ -231,6 +237,9 @@ namespace Modelling {
     this->label3 = (gcnew System::Windows::Forms::Label());
     this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
     this->button2 = (gcnew System::Windows::Forms::Button());
+    this->radioButton1 = (gcnew System::Windows::Forms::RadioButton());
+    this->radioButton2 = (gcnew System::Windows::Forms::RadioButton());
+    this->radioButton3 = (gcnew System::Windows::Forms::RadioButton());
     (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->BeginInit();
     this->SuspendLayout();
     // 
@@ -288,7 +297,7 @@ namespace Modelling {
     // timer1
     // 
     this->timer1->Enabled = true;
-    this->timer1->Interval = 200;
+    this->timer1->Interval = 300;
     this->timer1->Tick += gcnew System::EventHandler(this, &Form1::timer1_Tick);
     // 
     // button2
@@ -297,15 +306,50 @@ namespace Modelling {
     this->button2->Name = L"button2";
     this->button2->Size = System::Drawing::Size(86, 21);
     this->button2->TabIndex = 8;
-    this->button2->Text = L"Stop";
+    this->button2->Text = L"Calculate";
     this->button2->UseVisualStyleBackColor = true;
     this->button2->Click += gcnew System::EventHandler(this, &Form1::button2_Click);
+    // 
+    // radioButton1
+    // 
+    this->radioButton1->AutoSize = true;
+    this->radioButton1->Checked = true;
+    this->radioButton1->Location = System::Drawing::Point(648, 179);
+    this->radioButton1->Name = L"radioButton1";
+    this->radioButton1->Size = System::Drawing::Size(87, 17);
+    this->radioButton1->TabIndex = 9;
+    this->radioButton1->TabStop = true;
+    this->radioButton1->Text = L"Calculate Phi";
+    this->radioButton1->UseVisualStyleBackColor = true;
+    // 
+    // radioButton2
+    // 
+    this->radioButton2->AutoSize = true;
+    this->radioButton2->Location = System::Drawing::Point(648, 202);
+    this->radioButton2->Name = L"radioButton2";
+    this->radioButton2->Size = System::Drawing::Size(86, 17);
+    this->radioButton2->TabIndex = 10;
+    this->radioButton2->Text = L"Calculate Psi";
+    this->radioButton2->UseVisualStyleBackColor = true;
+    // 
+    // radioButton3
+    // 
+    this->radioButton3->AutoSize = true;
+    this->radioButton3->Location = System::Drawing::Point(648, 225);
+    this->radioButton3->Name = L"radioButton3";
+    this->radioButton3->Size = System::Drawing::Size(85, 17);
+    this->radioButton3->TabIndex = 11;
+    this->radioButton3->Text = L"Calculate Cp";
+    this->radioButton3->UseVisualStyleBackColor = true;
     // 
     // Form1
     // 
     this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
     this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
     this->ClientSize = System::Drawing::Size(754, 662);
+    this->Controls->Add(this->radioButton3);
+    this->Controls->Add(this->radioButton2);
+    this->Controls->Add(this->radioButton1);
     this->Controls->Add(this->button2);
     this->Controls->Add(this->label3);
     this->Controls->Add(this->textBox3);
@@ -357,7 +401,7 @@ namespace Modelling {
                    gamma = System::Double::Parse(textBox3->Text);
                  model.SetParams(Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
                  to_draw = true;
-               
+                 first_time = true;
                  model.ReInit();
                  Model::colors_by_phi.clear();
                }
@@ -371,6 +415,10 @@ namespace Modelling {
 
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) 
            {
+             if(to_draw && !first_time)
+               {
+                model.UpdatePoints();
+               }
              if(to_draw)
                model.CalcGamma();
              if(!model.GetCurrGamma().empty() && to_draw)
@@ -380,13 +428,19 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
                  DrawPoints();
                  Invalidate(true);
                }
-             if(to_draw)
-               model.UpdatePoints();
+              first_time = false;             
            }
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
            {
+             int mode;
+             if(radioButton1->Checked)
+               mode = 0;
+             if(radioButton2->Checked)
+               mode = 1;
+             if(radioButton3->Checked)
+               mode = 2;
              to_draw = false;
-             CalcColors(Model::colors_by_phi, model, 1);
+             CalcColors(Model::colors_by_phi, model, mode);
              FillColors(Model::colors_by_phi);
              DrawAxes();
              DrawPoints();

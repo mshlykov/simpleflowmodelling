@@ -13,6 +13,7 @@ class Model
     void ReInit();
     void SetParams(const Vector2D& i_velocity, double i_gamma);
     void CalcGamma();
+    double CalcPhiSec(const Vector2D& i_point) const;
     double CalcPhi(const Vector2D& i_point) const;
     double CalcPsi(const Vector2D& i_point) const;
     double CalcCp(const Vector2D& i_point) const;
