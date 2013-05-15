@@ -21,7 +21,7 @@ namespace Modelling {
 		{
 			InitializeComponent();
 		  pictureBox1->Image = gcnew Bitmap(pictureBox1->Size.Width, pictureBox1->Size.Height);
-		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -1.5, -1.5, 1.5, 1.5);
+		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -1, -1, 1, 1);
 			//
 			//TODO: Add the constructor code here
 			//

@@ -368,7 +368,7 @@ double Model::CalcCp(const Vector2D& i_point) const
             if(d < delta_star * delta_star)
               {
                 d = delta_star * delta_star;
-                //orth = orth * delta_star;
+                //orth = orth * delta_star * (1.0 /  sqrt(d));
               }
             dphi += Qsum * (orth * diff) / d;
           }
@@ -387,23 +387,10 @@ double Model::CalcCp(const Vector2D& i_point) const
             if(d < delta_star * delta_star)
               {
               d = delta_star * delta_star;
-              //orth = orth * delta_star;
+              //orth = orth * delta_star * (1.0 /  sqrt(d));
               }
             dphi += QQ * (orth * diff) / d;
           }
-
-        /*double dx = i_point.X() - m_contours[0][90].X(), 
-          dy = i_point.Y() - m_contours[0][90].Y(), pointarg;
-        if(! (Math::Abs(dx) < 0.00001))
-          {
-          if(dx > 0 && dy > 0)
-            pointarg = Math::Atan(dy / dx);
-          else if(dx < 0)
-            pointarg = Math::Atan(dy / dx) + Math::PI;
-          else if(dx > 0 && dy < 0)
-            pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
-          }
-        dphi += (QQ + (m_curr_gamma[90] - m_prev_gamma[90]) + m_off_gamma[3][m_off_gamma[3].size() - 1]) * pointarg;*/
 
         for(std::size_t i = 0; i < m_off_points.size(); ++i)
           {
@@ -415,15 +402,14 @@ double Model::CalcCp(const Vector2D& i_point) const
             if(d < delta_star * delta_star)
               {
               d = delta_star * delta_star;
-              //orth = orth * delta_star;
+              //orth = orth * delta_star * (1.0 /  sqrt(d));
               }
             dphi += m_off_gamma[i].back() * (orth * diff) / d;
           }
-        dphi /= m_dt;
+        dphi /= 2 * Math::PI * m_dt;
         for(std::size_t i = 0; i < m_off_points.size(); ++i)
           for(std::size_t j = 0; j < m_off_points[i].size(); ++j)
             dphi -= m_off_gamma[i][j] * (V(i_point, m_off_points[i][j]) * CalcSpeed(m_off_points[i][j]));
-        dphi /= 2 * Math::PI;
       }
     return  1 - CalcSpeed(i_point).Length2() - 2 * dphi;
 
@@ -440,7 +426,7 @@ Vector2D Model::CalcSpeed(const Vector2D& i_point) const
       {
         for(std::size_t j = 0; j < m_contours[i].size(); ++j)
           {
-          res = res + m_curr_gamma[move + j] * V(i_point, m_contours[i][j]);
+            res = res + m_curr_gamma[move + j] * V(i_point, m_contours[i][j]);
           }
         move += m_contours[i].size();
       }
