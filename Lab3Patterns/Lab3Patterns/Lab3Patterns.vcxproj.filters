@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Algo">
+      <UniqueIdentifier>{093b581d-35a0-4ba6-a252-0b4ac0289bd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{5e41e5e8-c4d2-4e45-a109-3cf0d7bc994d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Khachiyan">
+      <UniqueIdentifier>{4849545a-5d4e-4de7-8260-1fc0a5d48d4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Aux">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Drawing">
+      <UniqueIdentifier>{2b279db1-6aab-48d5-810b-14529cf228dd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>Aux</Filter>
+    </ClCompile>
+    <ClCompile Include="RandNums.cpp">
+      <Filter>Aux</Filter>
+    </ClCompile>
+    <ClCompile Include="Algos.cpp">
+      <Filter>Algo</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="ellipsoids.cpp">
+      <Filter>Khachiyan</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2D.cpp">
+      <Filter>Aux</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawer.cpp">
+      <Filter>Aux</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Matrix.h">
+      <Filter>Aux</Filter>
+    </ClInclude>
+    <ClInclude Include="RandNums.h">
+      <Filter>Aux</Filter>
+    </ClInclude>
+    <ClInclude Include="Algos.h">
+      <Filter>Algo</Filter>
+    </ClInclude>
+    <ClInclude Include="ellipsoids.hpp">
+      <Filter>Khachiyan</Filter>
+    </ClInclude>
+    <ClInclude Include="mcpoint.h">
+      <Filter>Khachiyan</Filter>
+    </ClInclude>
+    <ClInclude Include="glut.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2D.h">
+      <Filter>Aux</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawer.h" />
+  </ItemGroup>
+</Project>
