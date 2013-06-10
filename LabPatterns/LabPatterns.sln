@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Proj1", "Proj1\Proj1.vcxproj", "{37DBA1BE-CACB-460F-B5EB-1B04187CA3DA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RandNums", "RandNums\RandNums.vcxproj", "{010F0C0C-ED96-4433-A1D5-B56351E69E6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{58C46859-787B-4133-A40F-30192564074B}"
+	ProjectSection(SolutionItems) = preProject
+		Комментарии к проекту.txt = Комментарии к проекту.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37DBA1BE-CACB-460F-B5EB-1B04187CA3DA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{37DBA1BE-CACB-460F-B5EB-1B04187CA3DA}.Debug|Win32.Build.0 = Debug|Win32
+		{37DBA1BE-CACB-460F-B5EB-1B04187CA3DA}.Release|Win32.ActiveCfg = Release|Win32
+		{37DBA1BE-CACB-460F-B5EB-1B04187CA3DA}.Release|Win32.Build.0 = Release|Win32
+		{010F0C0C-ED96-4433-A1D5-B56351E69E6A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{010F0C0C-ED96-4433-A1D5-B56351E69E6A}.Debug|Win32.Build.0 = Debug|Win32
+		{010F0C0C-ED96-4433-A1D5-B56351E69E6A}.Release|Win32.ActiveCfg = Release|Win32
+		{010F0C0C-ED96-4433-A1D5-B56351E69E6A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
