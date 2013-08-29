@@ -240,7 +240,7 @@ double Model::CalcPhiSec(const Vector2D& i_point) const
     if(m_gamma != 0.0)
       {
         double dx = i_point.X() - m_contours[0][90].X(), 
-          dy = i_point.Y() - m_contours[0][90].Y(), pointarg;
+          dy = i_point.Y() - m_contours[0][90].Y(), pointarg = 0;
         if(! (Math::Abs(dx) < 0.00001))
           {
           if(dx > 0 && dy > 0)
