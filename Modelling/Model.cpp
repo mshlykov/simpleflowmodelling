@@ -82,7 +82,7 @@ const Contours& Model::GetContours() const
 
 double Model::GetGamma(int i_i, int i_j) const
   {
-  int summ = 0;
+  std::size_t summ = 0;
   for(int i = 0; i < i_i; ++i)
     summ += m_contours[i].size();
   return m_curr_gamma[summ + i_j];
