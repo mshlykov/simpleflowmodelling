@@ -12,56 +12,56 @@ class Matrix
 	public:
 		
     Matrix():els(0),row(0),col(0){};
-		Matrix(int,int);
+		Matrix(std::size_t,std::size_t);
 		Matrix(const Matrix&);
 		
     ~Matrix();
 		
     Matrix Inverse();
 		
-    void Resize(int,int);
+    void Resize(std::size_t,std::size_t);
 		
-    double& operator()(int,int);
-    const double& operator()(int,int) const;
+    double& operator()(std::size_t,std::size_t);
+    const double& operator()(std::size_t,std::size_t) const;
 		
-    int GetRsize()
+    std::size_t GetRsize()
 		{
 			return row;
 		}
 
-		int GetCsize()
+		std::size_t GetCsize()
 		{
 			return col;
 		}
 		
     friend ostream& operator <<(ostream&,Matrix&);
 		
-    friend Matrix operator *(Matrix,Matrix);
-		friend Matrix operator *(double,Matrix);
+    friend Matrix operator *(const Matrix&,const Matrix&);
+		friend Matrix operator *(double,const Matrix&);
 		
-    friend Matrix operator +(Matrix,Matrix);
-		friend Matrix operator -(Matrix,Matrix);
+    friend Matrix operator +(const Matrix&,const Matrix&);
+		friend Matrix operator -(const Matrix&,const Matrix&);
 		
-    friend Matrix operator -(Matrix);
-		friend bool operator ==(Matrix&,Matrix&);
+    friend Matrix operator -(const Matrix&);
+		friend bool operator ==(const Matrix&,const Matrix&);
 		
     friend void getCoef(Matrix&);
 		Matrix& operator =(const Matrix&);
 		
     Matrix Transp();
 		
-    friend double NormVect(Matrix);
-		friend double NormMatr(Matrix);
+    friend double NormVect(const Matrix&);
+		friend double NormMatr(const Matrix&);
 		
 
     Matrix SolveGauss(Matrix b);
-    double Norm1(int&,int&);
+    double Norm1(std::size_t&,std::size_t&);
 		double SqEuclNorm();
 		Matrix PseudoInverse();
     bool CheckNull() const
       {
-      for(int i = 0; i < row; ++i)
-        for(int j = 0; j < col; ++j)
+      for(std::size_t i = 0; i < row; ++i)
+        for(std::size_t j = 0; j < col; ++j)
           if(std::abs(els[i][j]) > 0.00000001)
             return false;
 
@@ -69,8 +69,8 @@ class Matrix
       
       }
   private:
-
+    static double Eps;
     double **els;
-    int row,col;
+    std::size_t row,col;
 	};
 }

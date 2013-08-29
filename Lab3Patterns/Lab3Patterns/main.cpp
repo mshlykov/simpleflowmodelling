@@ -2,7 +2,7 @@
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
 #pragma comment(lib, "glaux.lib")
-
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -50,8 +50,8 @@ void BuildConvexLevels (std::vector<std::vector<Vector2D>>& o_levels, std::vecto
         o_centre.X() += o_levels[M - 1][i].X();
         o_centre.Y() += o_levels[M - 1][i].Y();
       }
-    o_centre.X() /= N;
-    o_centre.Y() /= N;
+    o_centre.X() /= static_cast<double>(N);
+    o_centre.Y() /= static_cast<double>(N);
   }
 
 void BuildEllipses(std::vector<MatrSpace::Matrix>& o_ellipses, std::vector<MatrSpace::Matrix>& o_centres, std::vector<double>& o_areas, Vector2D& o_centre,
@@ -89,18 +89,18 @@ void BuildEllipses(std::vector<MatrSpace::Matrix>& o_ellipses, std::vector<MatrS
 void CalcEllipseBorder(std::vector<Vector2D>& o_vertices, const MatrSpace::Matrix& i_ellipse_matr, const MatrSpace::Matrix& i_ellipse_centre)
   {
     int N = 100;
-    double h = (maxx - minx) / 100;
+    double h = 0;
     double D, y1, y2, x;
     double det = i_ellipse_matr(0, 0) * i_ellipse_matr(1, 1) - i_ellipse_matr(1, 0) * i_ellipse_matr(0, 1);
     det = sqrt(det);
     det = 1 / det;
-    det *= 8.0 / 3.14159;
+    det *= 8.0 / M_PI;
     det = sqrt(det);
     h = 2 * det / N;
     for(int i = 0; i < N + 1; ++i)
       {
         x = -det + i * h;
-        D = x * x * (i_ellipse_matr(1, 0) + i_ellipse_matr(0, 1)) * (i_ellipse_matr(1, 0) + i_ellipse_matr(0, 1)) - 4 * i_ellipse_matr(1, 1) * ( x * x * i_ellipse_matr(0, 0) - 1);
+        D = x * x * (i_ellipse_matr(1, 0) + i_ellipse_matr(0, 1)) * (i_ellipse_matr(1, 0) + i_ellipse_matr(0, 1)) - 4.0 * i_ellipse_matr(1, 1) * ( x * x * i_ellipse_matr(0, 0) - 1);
         if (D < 0)
           continue;
         else
@@ -156,17 +156,17 @@ void DrawEllipse(const std::vector<Vector2D>& i_vertices, const Drawer& i_drawer
 
 void DrawAxes(const Drawer& i_drawer)
   {
-    double minx = i_drawer.GetMinX(), miny = i_drawer.GetMinY(),
-      maxx = i_drawer.GetMaxX(), maxy = i_drawer.GetMaxY();
+    double minx1 = i_drawer.GetMinX(), miny1 = i_drawer.GetMinY(),
+      maxx1 = i_drawer.GetMaxX(), maxy1 = i_drawer.GetMaxY();
     glColor3d(0, 0, 1);
     glBegin(GL_LINE_STRIP);
     i_drawer.DrawVert(0, 0);
-    i_drawer.DrawVert(maxx, 0);
+    i_drawer.DrawVert(maxx1, 0);
     glEnd();
 
     glBegin(GL_LINE_STRIP);
     i_drawer.DrawVert(0, 0);
-    i_drawer.DrawVert(0, maxy);
+    i_drawer.DrawVert(0, maxy1);
     glEnd();
   }
 
@@ -234,16 +234,16 @@ void Display(void)
             glColor3d(1, 1, 1);
             glBegin(GL_LINE_STRIP);
             for(std::size_t j = 0; j < areas[i].size(); ++j)
-              drawers[i].DrawVert(j, areas[i][j]);
+              drawers[i].DrawVert(static_cast<double>(j), areas[i][j]);
             glEnd();
             glColor3d(1, 1, 0);
             glBegin(GL_POINTS);
             for(std::size_t j = 0; j < areas[i].size(); ++j)
-              drawers[i].DrawVert(j, areas[i][j]);
+              drawers[i].DrawVert(static_cast<double>(j), areas[i][j]);
             glEnd();
             for(std::size_t j = 0; j < areas[i].size(); ++j)
               if( j % (areas[i].size() / 20 + 1) == 0)
-                drawers[i].DrawText(std::to_string((long double)areas[i][j]).substr(0, 5), j, areas[i][j] + 0.005 * (drawers[i].GetMaxY() - drawers[i].GetMinY()));
+                drawers[i].DrawText(std::to_string((long double)areas[i][j]).substr(0, 5), static_cast<double>(j), areas[i][j] + 0.005 * (drawers[i].GetMaxY() - drawers[i].GetMinY()));
           }
       }
     else if(mode == 2)
@@ -254,16 +254,16 @@ void Display(void)
             glColor3d(1, 1, 1);
             glBegin(GL_LINE_STRIP);
             for(std::size_t j = 0; j < areas[i].size() - 1; ++j)
-              drawers[i].DrawVert(j, areas[i][j] - areas[i][j + 1]);
+              drawers[i].DrawVert(static_cast<double>(j), areas[i][j] - areas[i][j + 1]);
             glEnd();
             glColor3d(1, 1, 0);
             glBegin(GL_POINTS);
             for(std::size_t j = 0; j < areas[i].size() - 1; ++j)
-              drawers[i].DrawVert(j, areas[i][j] - areas[i][j + 1]);
+              drawers[i].DrawVert(static_cast<double>(j), areas[i][j] - areas[i][j + 1]);
             glEnd();
             for(std::size_t j = 0; j < areas[i].size() - 1; ++j)
               if(j % (areas[i].size() / 20 + 1) == 0)
-                drawers[i].DrawText(std::to_string((long double)areas[i][j] - areas[i][j + 1]).substr(0, 5), j, areas[i][j] - areas[i][j + 1] + 0.005 * (drawers[i].GetMaxY() - drawers[i].GetMinY()));
+                drawers[i].DrawText(std::to_string((long double)areas[i][j] - areas[i][j + 1]).substr(0, 5), static_cast<double>(j), areas[i][j] - areas[i][j + 1] + 0.005 * (drawers[i].GetMaxY() - drawers[i].GetMinY()));
           }
       }
     glutSwapBuffers();
@@ -302,7 +302,7 @@ void Keyboard( unsigned char key, int x, int y )
       {
         mode = 1;
         for(std::size_t i = 0; i < drawers.size(); ++i)
-          drawers[i].SetViewport(-1, areas[i].size() + 1, -1, areas[i][0] + 2);
+          drawers[i].SetViewport(-1, static_cast<double>(areas[i].size() + 1), -1, static_cast<double>(areas[i][0] + 2));
       }
 
     if(key == '3')
@@ -318,7 +318,7 @@ void Keyboard( unsigned char key, int x, int y )
                 if(maxdif < areas[i][j] - areas[i][j + 1])
                   maxdif = areas[i][j] - areas[i][j + 1];
               }
-            drawers[i].SetViewport(-1, areas[i].size(), mindif - 1, maxdif + 1);
+            drawers[i].SetViewport(-1, static_cast<double>(areas[i].size()), mindif - 1, maxdif + 1);
           }
       }
     glutPostRedisplay();
@@ -327,16 +327,16 @@ void Keyboard( unsigned char key, int x, int y )
 void main(int argc, char *argv[])
   {
     std::cout << "Enter sample size: ";
-    int N;
+    std::size_t N;
     std::cin >> N;
     srand((int)time(0));
     if(N <= 20)
       N = 20;
     GetSample(points, N);
     minx = points[0](0, 0);
-    maxx =  points[0](0, 0);
+    maxx =  minx;
     miny = points[0](1, 0);
-    maxy =  points[0](1, 0);
+    maxy =  miny;
     for(std::size_t i = 1; i < points.size(); ++i)
       {
         if(points[i](0, 0) < minx)

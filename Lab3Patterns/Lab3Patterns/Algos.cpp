@@ -1,14 +1,16 @@
+#define _USE_MATH_DEFINES
 #include "Algos.h"
 #include "ellipsoids.hpp"
 #include "Matrix.h"
 #include <numeric>
 #include <cmath>
+//#include <math.h>
 
 MatrSpace::Matrix ConvToMatr(const boost::numeric::ublas::matrix<double>& i_matrix)
   {
     MatrSpace::Matrix res(i_matrix.size1(), i_matrix.size2());
-    for(int i = 0; i < res.GetRsize(); ++i)
-      for(int j = 0; j < res.GetCsize(); ++j)
+    for(std::size_t i = 0; i < res.GetRsize(); ++i)
+      for(std::size_t j = 0; j < res.GetCsize(); ++j)
         res(i, j) = i_matrix(i, j);
     return res;
   }
@@ -16,21 +18,21 @@ MatrSpace::Matrix ConvToMatr(const boost::numeric::ublas::matrix<double>& i_matr
 MatrSpace::Matrix ConvToMatr(const boost::numeric::ublas::vector<double>& i_vector)
   {
     MatrSpace::Matrix res(i_vector.size(), 1);
-    for(int i = 0; i < res.GetRsize(); ++i)
+    for(std::size_t i = 0; i < res.GetRsize(); ++i)
       res(i, 0) = i_vector(i);
     return res;
   }
 
 void CentroidEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const MatrSpace::Matrix& i_ellipsematr, const MatrSpace::Matrix& centre, std::vector<MatrSpace::Matrix> points)
   {
-    double phi = 0.5 * std::atan(2 * i_ellipsematr(0, 1) / (i_ellipsematr(1, 1) - i_ellipsematr(0, 0))), PI = 3.14159;
+    double phi = 0.5 * std::atan(2 * i_ellipsematr(0, 1) / (i_ellipsematr(1, 1) - i_ellipsematr(0, 0)));
     
     if(std::abs(i_ellipsematr(1, 1) - i_ellipsematr(0, 0)) < 0.0001)
       {
         if(i_ellipsematr(0, 1) > 0)
-          phi = PI / 2;
+          phi = M_PI / 2;
         else
-          phi = - PI / 2;
+          phi = - M_PI / 2;
       }
 
     MatrSpace::Matrix rot(2, 2), transprot(2, 2), scale(2, 2), invscale(2, 2), transf(2, 2), invtransf(2, 2);
@@ -54,7 +56,7 @@ void CentroidEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, const Ma
         points[i] = invtransf * points[i];
         centroid = centroid + points[i];
       }
-    centroid = (1.0 / points.size()) * centroid;
+    centroid = (1.0 / static_cast<double>(points.size())) * centroid;
     double rad = 0;
     rad = (points[0] - centroid).SqEuclNorm();
   
@@ -78,10 +80,10 @@ void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, std::vecto
       {
         o_centre = 0.5 * (points[0] + points[1]);
         Q.Resize(2, 2);
-        Q(0, 0) = Q(1, 1) = 4 / (points[0] - points[1]).SqEuclNorm();
+        Q(0, 0) = Q(1, 1) = 4.0 / (points[0] - points[1]).SqEuclNorm();
         return;
       }
-    int idx1, idx2;
+    std::size_t idx1, idx2;
     double dist = (points[0] - points[1]).SqEuclNorm();
     idx1 = 0;
     idx2 = 1;
@@ -112,19 +114,19 @@ void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, std::vecto
           dev2 = a * points[i](0, 0) + b * points[i](1, 0) + c;
       }
 
-    double dist1 = (std::abs(dev1) + std::abs(dev2)) / std::sqrt(a * a + b * b), phi = atan(vect(1, 0) / vect(0, 0)), PI = 3.14159;
+    double dist1 = (std::abs(dev1) + std::abs(dev2)) / std::sqrt(a * a + b * b), phi = atan(vect(1, 0) / vect(0, 0));
 
     if(vect(0, 0) < 0)
-      phi += PI;
+      phi += M_PI;
     else if(vect(1, 0) < 0)
-      phi += 2 * PI;
+      phi += 2 * M_PI;
 
     if(std::abs(vect(0, 0)) < 0.0001)
       {
         if(vect(1, 0) > 0)
-          phi = PI / 2;
+          phi = M_PI / 2;
         else
-          phi = - PI / 2;
+          phi = - M_PI / 2;
       }
 
     MatrSpace::Matrix rot(2, 2), invrot(2, 2), scale(2, 2), invscale(2, 2), invtransf;
@@ -146,7 +148,7 @@ void AffineEllipse(MatrSpace::Matrix& Q, MatrSpace::Matrix& o_centre, std::vecto
         points[i] = invtransf * points[i];
         centroid = centroid + points[i];
       }
-    centroid = (1.0 / points.size()) * centroid;
+    centroid = (1.0 / static_cast<double>(points.size())) * centroid;
 
     double rad = 0;
     rad = (points[0] - centroid).SqEuclNorm();
@@ -197,7 +199,7 @@ void GrahamScan(std::vector<MatrSpace::Matrix>& o_result, std::vector<MatrSpace:
         return;
       }
     double minx = i_points[0](0, 0);
-    int jmin = 0;
+    std::size_t jmin = 0;
     for(std::size_t i = 0; i < i_points.size(); ++i)
       {
         if(i_points[i](1, 0) < i_points[jmin](1, 0))
@@ -231,6 +233,6 @@ double ConvexVol(const std::vector<MatrSpace::Matrix>& i_points)
 
 double EllipseVol(const MatrSpace::Matrix& i_ellipse_matr)
   {
-  double vol = 4.0 / 3.0 * 3.14159 / std::sqrt(i_ellipse_matr(0, 0) * i_ellipse_matr(1, 1) - i_ellipse_matr(1, 0) * i_ellipse_matr(0, 1));
+  double vol = 4.0 / 3.0 * M_PI / std::sqrt(i_ellipse_matr(0, 0) * i_ellipse_matr(1, 1) - i_ellipse_matr(1, 0) * i_ellipse_matr(0, 1));
   return vol;
   }

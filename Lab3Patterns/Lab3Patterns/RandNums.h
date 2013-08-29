@@ -1,3 +1,3 @@
 #pragma once
 #include<vector>
-void GetSample(std::vector<MatrSpace::Matrix>&,  int sample_size = 40);
+void GetSample(std::vector<MatrSpace::Matrix>&,  std::size_t sample_size = 40);
