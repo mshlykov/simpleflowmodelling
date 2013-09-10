@@ -197,9 +197,24 @@ namespace Modelling {
       for(int i = 0; i < N; ++i)
         for(int j = 0; j < N; ++j)
           {
-          double coef = (phi_matr[i][j] - min_phi) / (max_phi - min_phi);
-          int diff = static_cast<int>(0xFF * coef); 
-          o_colors_by_phi[i].push_back(0xFF000000 + diff + (diff << 8) + (diff << 16));
+          double coef = 2.0 * (phi_matr[i][j] - min_phi) / (max_phi - min_phi);
+
+          int color = 0;
+
+          if(coef >= 1.0)
+            {
+            coef -= 1.0;
+            int col = 255 - static_cast<int>(static_cast<int>(number_of_colors * coef) * 255.0 / number_of_colors);
+            color = 0xFF000000 + col + (col << 8) + (255 << 16);
+            }
+          else
+            {
+            int col = static_cast<int>(static_cast<int>(number_of_colors * coef) * 255.0 / number_of_colors);
+            color = 0xFF000000 + 255 + (col << 8) + (col << 16);
+            }
+
+          //int diff = static_cast<int>(0xFF * coef); 
+          o_colors_by_phi[i].push_back(color);
           }
 
       }
