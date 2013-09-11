@@ -80,10 +80,10 @@ const Contours& Model::GetContours() const
 
 //-------------------------------------
 
-double Model::GetGamma(int i_i, int i_j) const
+double Model::GetGamma(std::size_t i_i, std::size_t i_j) const
   {
   std::size_t summ = 0;
-  for(int i = 0; i < i_i; ++i)
+  for(std::size_t i = 0; i < i_i; ++i)
     summ += m_contours[i].size();
   return m_curr_gamma[summ + i_j];
   }
@@ -95,10 +95,10 @@ void Model::CalcGamma()
     /*if(!m_curr_gamma.empty())
       m_curr_gamma.clear();*/
 
-    int M = m_colloc.size() + 1;  
+    std::size_t M = m_colloc.size() + 1;  
     MatrSpace::Matrix A(M, M), b(M, 1);
   
-    for(int i = 0; i < M - 1; ++i)
+    for(std::size_t i = 0; i < M - 1; ++i)
       {
       b(i, 0) = m_velocity * m_normals[i] * (-1);
     
@@ -108,7 +108,7 @@ void Model::CalcGamma()
 
       A(M - 1, i) = 1;
 
-      for(int j = 0; j < M; ++j)
+      for(std::size_t j = 0; j < M; ++j)
         A(i, j) = V(j, m_colloc[i]) * m_normals[i];
       }
   
@@ -420,7 +420,7 @@ double Model::CalcCp(const Vector2D& i_point) const
 Vector2D Model::CalcSpeed(const Vector2D& i_point) const
   {
     Vector2D res = m_velocity;
-    int move = 0;
+    std::size_t move = 0;
 
     for(std::size_t i = 0; i < m_contours.size(); ++i)
       {
@@ -453,10 +453,10 @@ Vector2D Model::V(const Vector2D& i_vect1, const Vector2D& i_vect2) const
 
 //-------------------------------------
 
-Vector2D Model::V(int i_idx, const Vector2D& i_vect) const
+Vector2D Model::V(std::size_t i_idx, const Vector2D& i_vect) const
   {
-    int summ = 0;
-    int i = 0;
+    std::size_t summ = 0;
+    std::size_t i = 0;
     for(; summ < i_idx + 1; ++i)
       summ += m_contours[i].size();
     summ -= m_contours[i - 1].size();
@@ -466,10 +466,10 @@ Vector2D Model::V(int i_idx, const Vector2D& i_vect) const
 
 //-------------------------------------
 
-Vector2D Model::GetPoint(int i_idx) const
+Vector2D Model::GetPoint(std::size_t i_idx) const
   {
-    int summ = 0;
-    int i = 0;
+    std::size_t summ = 0;
+    std::size_t i = 0;
     for(; summ < i_idx + 1; ++i)
       summ += m_contours[i].size();
     summ -= m_contours[i - 1].size();
@@ -562,9 +562,9 @@ const Vector2D& Model::GetVelocity() const
 
 //-------------------------------------
 
-int Model::GetSize() const
+std::size_t Model::GetSize() const
   {
-    int summ = 0;
+    std::size_t summ = 0;
     for(std::size_t i = 0; i < m_contours.size(); ++i)
       summ += m_contours[i].size();
     return summ;

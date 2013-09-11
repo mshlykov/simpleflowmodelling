@@ -20,9 +20,9 @@ class Model
     Vector2D CalcSpeed(const Vector2D& i_point) const;
 
     Vector2D V(const Vector2D& i_vect1, const Vector2D& i_vect2) const;
-    Vector2D V(int i_idx, const Vector2D&  i_vect) const;
-    Vector2D GetPoint(int i_idx) const;
-    double Model::GetGamma(int i_i, int i_j) const;
+    Vector2D V(std::size_t i_idx, const Vector2D&  i_vect) const;
+    Vector2D GetPoint(std::size_t i_idx) const;
+    double Model::GetGamma(std::size_t i_i, std::size_t i_j) const;
     void UpdatePoints();
     
     const Contours& GetContours() const;
@@ -32,7 +32,7 @@ class Model
     const std::vector<std::vector<double>>& GetOffGamma() const;
     const std::vector<double>& GetCurrGamma() const;
 
-    int GetSize() const;
+    std::size_t GetSize() const;
 
     static std::vector<std::vector<int>> colors_by_phi;
 
