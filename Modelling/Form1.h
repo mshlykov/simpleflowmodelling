@@ -129,7 +129,8 @@ namespace Modelling {
       Graphics^ e = Graphics::FromImage(pictureBox1->Image);
       Pen^ pen = gcnew Pen(Color::Green);
       pen->EndCap = System::Drawing::Drawing2D::LineCap::ArrowAnchor;
-      int N = 20, M = model.GetSize();
+      int N = 20;
+      std::size_t M = model.GetSize();
       double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY(), scaler = 1;
       Vector2D summ;
