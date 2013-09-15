@@ -19,6 +19,7 @@ class Model
     double CalcCp(const Vector2D& i_point) const;
     Vector2D CalcSpeed(const Vector2D& i_point) const;
 
+    Vector2D MoveFromContour(const Vector2D& i_point, const Vector2D& prev_pos) const;
     Vector2D V(const Vector2D& i_vect1, const Vector2D& i_vect2) const;
     Vector2D V(std::size_t i_idx, const Vector2D&  i_vect) const;
     Vector2D GetPoint(std::size_t i_idx) const;

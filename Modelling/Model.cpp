@@ -347,7 +347,7 @@ double Model::CalcCp(const Vector2D& i_point) const
     if(m_dt != 0)
       {
         double QQ = 0, d;
-        double Qsum = m_off_gamma[4].back();//[m_off_gamma[4].size() - 1];
+        double Qsum = m_off_gamma[4].back();
 
         for(std::size_t i = 0; i < m_contours[1].size(); ++i)
           {
@@ -368,7 +368,6 @@ double Model::CalcCp(const Vector2D& i_point) const
             if(d < delta_star * delta_star)
               {
                 d = delta_star * delta_star;
-                //orth = orth * delta_star * (1.0 /  sqrt(d));
               }
             dphi += Qsum * (orth * diff) / d;
           }
@@ -381,28 +380,26 @@ double Model::CalcCp(const Vector2D& i_point) const
             if(i == 45)
               QQ += Qsum;
             if(i % 30 == 0)
-              QQ += m_off_gamma[i / 30].back();//m_off_gamma[i / 30][m_off_gamma[i / 30].size() - 1];
+              QQ += m_off_gamma[i / 30].back();
             d = orth.Length2();
             orth = orth.GetOrthogonal();
             if(d < delta_star * delta_star)
               {
               d = delta_star * delta_star;
-              //orth = orth * delta_star * (1.0 /  sqrt(d));
               }
             dphi += QQ * (orth * diff) / d;
           }
 
         for(std::size_t i = 0; i < m_off_points.size(); ++i)
           {
-            diff = m_corners[i] - m_off_points[i].back();//m_off_points[i][m_off_points[i].size() - 1];
-            xstar = 0.5 * (m_corners[i] + m_off_points[i].back());//m_off_points[i][m_off_points[i].size() - 1]);
+            diff = m_corners[i] - m_off_points[i].back();
+            xstar = 0.5 * (m_corners[i] + m_off_points[i].back());
             orth = i_point - xstar;
             d = orth.Length2();
             orth = orth.GetOrthogonal();
             if(d < delta_star * delta_star)
               {
               d = delta_star * delta_star;
-              //orth = orth * delta_star * (1.0 /  sqrt(d));
               }
             dphi += m_off_gamma[i].back() * (orth * diff) / d;
           }
@@ -479,6 +476,47 @@ Vector2D Model::GetPoint(std::size_t i_idx) const
 
 //-------------------------------------
 
+Vector2D Model::MoveFromContour(const Vector2D& i_point, const Vector2D& prev_pos) const
+  {
+    double D = 2 * m_delta;
+    Vector2D res = i_point;
+    if(std::abs(i_point.Y() + 0.5) < D && i_point.X() > -0.5 && i_point.X() < 0.5)
+      {
+      if(prev_pos.Y() < -0.5)
+        res.Y() = -0.5 - D;
+      else
+        res.Y() = -0.5 + D;
+
+      }
+
+    if(std::abs(i_point.X() + 0.5) < D && i_point.Y() > -0.5  && i_point.Y() < 0.5)
+      {
+      if(prev_pos.X() < -0.5)
+        res.X() = -0.5 - D;
+      else
+        res.X() = -0.5 + D;
+      }
+
+    if(std::abs(i_point.X()) < D && i_point.Y() > -0.5 && i_point.Y() < 0.5)
+      {
+      if(prev_pos.X() < 0)
+        res.X() = -D;
+      else
+        res.X() = D;
+      }
+
+    if(std::abs(i_point.X() - 0.5) < D && i_point.Y() > -0.5 && i_point.Y() < 0.5)
+      {
+      if(prev_pos.X() < 0.5)
+        res.X() = 0.5 - D;
+      else
+        res.X() = 0.5 + D;
+      }
+    return res;
+  }
+
+//-------------------------------------
+
 void Model::UpdatePoints()
   {
     m_dt  = 1. / CalcSpeed(m_contours[0][0]).Length2();
@@ -499,45 +537,8 @@ void Model::UpdatePoints()
     m_dt = std::sqrt(m_dt) * D;
     std::vector<std::vector<Vector2D>> new_points(m_off_points.size());
     for(std::size_t i = 0; i < m_off_points.size(); ++i)
-      {
-        for(std::size_t j = 0; j < m_off_points[i].size(); ++j)
-          {
-          new_points[i].push_back(m_off_points[i][j] + m_dt * CalcSpeed(m_off_points[i][j]));
-      
-          if(std::abs(new_points[i][j].Y() + 0.5) < D && new_points[i][j].X() > -0.5 && new_points[i][j].X() < 0.5)
-            {
-            if(m_off_points[i][j].Y() < -0.5)
-              new_points[i][j].Y() = -0.5 - D;
-            else
-              new_points[i][j].Y() = -0.5 + D;
-
-            }
-      
-          if(std::abs(new_points[i][j].X() + 0.5) < D && new_points[i][j].Y() > -0.5  && new_points[i][j].Y() < 0.5)
-            {
-            if(m_off_points[i][j].X() < -0.5)
-              new_points[i][j].X() = -0.5 - D;
-            else
-              new_points[i][j].X() = -0.5 + D;
-            }
-
-          if(std::abs(new_points[i][j].X()) < D && new_points[i][j].Y() > -0.5 && new_points[i][j].Y() < 0.5)
-            {
-            if(m_off_points[i][j].X() < 0)
-              new_points[i][j].X() = -D;
-            else
-              new_points[i][j].X() = D;
-            }
-
-          if(std::abs(new_points[i][j].X() - 0.5) < D && new_points[i][j].Y() > -0.5 && new_points[i][j].Y() < 0.5)
-            {
-            if(m_off_points[i][j].X() < 0.5)
-              new_points[i][j].X() = 0.5 - D;
-            else
-              new_points[i][j].X() = 0.5 + D;
-            }
-          }
-      }
+      for(std::size_t j = 0; j < m_off_points[i].size(); ++j)
+        new_points[i].push_back(MoveFromContour(m_off_points[i][j] + m_dt * CalcSpeed(m_off_points[i][j]), m_off_points[i][j]));
 
     new_points[0].push_back(m_contours[0][0] + m_dt * CalcSpeed(m_contours[0][0]));
     new_points[1].push_back(m_contours[0][30] + m_dt * CalcSpeed(m_contours[0][30]));
