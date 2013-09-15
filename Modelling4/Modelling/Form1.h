@@ -11,6 +11,7 @@ namespace Modelling {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+  using namespace System::Globalization;
 
 	/// <summary>
 	/// Summary for Form1
@@ -22,7 +23,7 @@ namespace Modelling {
 		{
 			InitializeComponent();
 		  pictureBox1->Image = gcnew Bitmap(pictureBox1->Size.Width, pictureBox1->Size.Height);
-		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -1, -1, 1, 1);
+		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -1.5, -1.5, 1.5, 1.5);
 			//
 			//TODO: Add the constructor code here
 			//
@@ -419,7 +420,7 @@ namespace Modelling {
     this->textBox4->Location = System::Drawing::Point(655, 315);
     this->textBox4->Name = L"textBox4";
     this->textBox4->Size = System::Drawing::Size(86, 20);
-    this->textBox4->TabIndex = 15;
+    this->textBox4->TabIndex = 16;
     // 
     // textBox5
     // 
@@ -427,7 +428,7 @@ namespace Modelling {
     this->textBox5->Location = System::Drawing::Point(655, 289);
     this->textBox5->Name = L"textBox5";
     this->textBox5->Size = System::Drawing::Size(86, 20);
-    this->textBox5->TabIndex = 16;
+    this->textBox5->TabIndex = 15;
     // 
     // label4
     // 
@@ -531,15 +532,17 @@ namespace Modelling {
 
     private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) 
                {
-                 double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text) / 360,
-                   gamma = System::Double::Parse(textBox3->Text);
+                 CultureInfo^ cf = gcnew CultureInfo( "en-US", false );
+                 NumberFormatInfo^ nfi_e = cf->NumberFormat;
+                 double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text, nfi_e) / 360,
+                   gamma = System::Double::Parse(textBox3->Text, nfi_e);
                  model.SetParams(Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
                  if(radioButton4->Checked)
                    {
-                     double rad = System::Double::Parse(textBox6->Text),
-                       avg_ttl = System::Double::Parse(textBox1->Text), 
-                       posx = System::Double::Parse(textBox5->Text), 
-                       posy = System::Double::Parse(textBox4->Text);
+                     double rad = System::Double::Parse(textBox6->Text, nfi_e),
+                       avg_ttl = System::Double::Parse(textBox1->Text, nfi_e), 
+                       posx = System::Double::Parse(textBox5->Text, nfi_e), 
+                       posy = System::Double::Parse(textBox4->Text, nfi_e);
                      probl.SetParams(rad, avg_ttl, Vector2D(posx, posy));
                    }
                  to_draw = true;

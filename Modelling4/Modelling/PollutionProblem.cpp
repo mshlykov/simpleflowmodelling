@@ -50,8 +50,10 @@ void PollutionProblem::MoveParticles(const Model& i_model)
     std::for_each(m_particles.begin(), m_particles.end(),
       [&i_model, this](SulfurParticle& i_particle)
       {
+        Vector2D new_pos = i_particle.GetLocation();
+        new_pos = new_pos + i_model.GetDt() * i_model.CalcSpeed(new_pos);
         if(i_particle.GetTTL() > m_curr_time)
-          i_particle.Translate(i_model.GetDt() * i_model.CalcSpeed(i_particle.GetLocation()));
+          i_particle.TranslateTo(i_model.MoveFromContour(new_pos, i_particle.GetLocation()));
       });
   }
 
@@ -67,7 +69,7 @@ void PollutionProblem::GenerateParticles()
         m_particles.clear();
         m_curr_time = 0.0;
       }
-    std::size_t N = 200;
+    std::size_t N = 500;
     double x = 0, y = 0;
     for(; m_particles.size() < N;)
       {

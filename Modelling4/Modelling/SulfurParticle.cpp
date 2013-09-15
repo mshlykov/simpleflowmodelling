@@ -18,9 +18,9 @@ double SulfurParticle::GetTTL() const
     return m_time_to_live;
   }
 
-void SulfurParticle::Translate(const Vector2D& i_vector)
+void SulfurParticle::TranslateTo(const Vector2D& i_vector)
   {
-    m_location = m_location + i_vector;
+    m_location = i_vector;
   }
 
 
