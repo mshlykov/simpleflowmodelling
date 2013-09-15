@@ -33,6 +33,7 @@ class Model
     const std::vector<double>& GetCurrGamma() const;
 
     std::size_t GetSize() const;
+    double GetDt() const;
 
     static std::vector<std::vector<int>> colors_by_phi;
 

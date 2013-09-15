@@ -572,6 +572,13 @@ std::size_t Model::GetSize() const
 
 //-------------------------------------
 
+double Model::GetDt() const
+  {
+    return m_dt;
+  }
+
+//-------------------------------------
+
 const std::vector<std::vector<Vector2D>>& Model::GetOffPoints() const
   {
     return m_off_points;
