@@ -60,7 +60,7 @@ ref class Drawer
     void DrawPoint(System::Drawing::Graphics^ i_graphics, double i_x, double i_y, int i_color)
       {
       System::Drawing::Brush^ br = gcnew System::Drawing::SolidBrush( Color::FromArgb(i_color));
-      i_graphics->FillRectangle(/*System::Drawing::Brushes::Black*/ br, ScaleX(i_x) - 1, ScaleY(i_y) - 1, 3, 3);
+      i_graphics->FillRectangle(br, ScaleX(i_x) - 1, ScaleY(i_y) - 1, 3, 3);
       }
 
     //-------------------------------------
