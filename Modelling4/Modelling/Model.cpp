@@ -108,8 +108,17 @@ void Model::CalcGamma()
 
       A(M - 1, i) = 1;
 
-      for(std::size_t j = 0; j < M; ++j)
-        A(i, j) = V(j, m_colloc[i]) * m_normals[i];
+      /*for(std::size_t j = 0; j < M; ++j)
+        A(i, j) = V(j, m_colloc[i]) * m_normals[i];*/
+
+      for(std::size_t j = 0, summ = 0; j < m_contours.size(); ++j)
+        {
+          for(std::size_t k = 0; k < m_contours[j].size(); ++k)
+            {
+              A(i, summ + k) = V(m_colloc[i], m_contours[j][k]) * m_normals[i];
+            }
+          summ += m_contours[j].size();
+        }
       }
   
     A(M - 1, M - 1) = 1;
@@ -450,16 +459,16 @@ Vector2D Model::V(const Vector2D& i_vect1, const Vector2D& i_vect2) const
 
 //-------------------------------------
 
-Vector2D Model::V(std::size_t i_idx, const Vector2D& i_vect) const
-  {
-    std::size_t summ = 0;
-    std::size_t i = 0;
-    for(; summ < i_idx + 1; ++i)
-      summ += m_contours[i].size();
-    summ -= m_contours[i - 1].size();
-
-    return V(i_vect, m_contours[i - 1][i_idx - summ]);
-  }
+//Vector2D Model::V(std::size_t i_idx, const Vector2D& i_vect) const
+//  {
+//    std::size_t summ = 0;
+//    std::size_t i = 0;
+//    for(; summ < i_idx + 1; ++i)
+//      summ += m_contours[i].size();
+//    summ -= m_contours[i - 1].size();
+//
+//    return V(i_vect, m_contours[i - 1][i_idx - summ]);
+//  }
 
 //-------------------------------------
 

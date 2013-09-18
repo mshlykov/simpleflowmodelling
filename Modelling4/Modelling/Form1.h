@@ -340,7 +340,6 @@ namespace Modelling {
     // timer1
     // 
     this->timer1->Enabled = true;
-    this->timer1->Interval = 500;
     this->timer1->Tick += gcnew System::EventHandler(this, &Form1::timer1_Tick);
     // 
     // button2
