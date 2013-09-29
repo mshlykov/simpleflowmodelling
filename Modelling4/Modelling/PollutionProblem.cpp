@@ -3,6 +3,7 @@
 #include <algorithm>
 
 PollutionProblem probl;
+std::vector<std::vector<int>> colors_for_conc;
 
 PollutionProblem::PollutionProblem(double i_radius, double i_average_ttl, const Vector2D& i_centre):
   m_centre(i_centre),
@@ -12,12 +13,12 @@ PollutionProblem::PollutionProblem(double i_radius, double i_average_ttl, const 
   {
   }
 
-void PollutionProblem::SetParams(double i_radius, double i_average_ttl, const Vector2D& i_centre)
+void PollutionProblem::SetParams(double i_radius, double i_average_ttl, std::size_t i_number_of_particles, const Vector2D& i_centre)
   {
     m_radius = i_radius;
     m_avg_ttl = i_average_ttl;
     m_centre = i_centre;
-    GenerateParticles();
+    GenerateParticles(i_number_of_particles);
   }
 
 const std::vector<SulfurParticle>& PollutionProblem::GetParticles()
@@ -62,16 +63,15 @@ void PollutionProblem::UpdateTime(const Model& i_model)
     m_curr_time += i_model.GetDt();
   }
 
-void PollutionProblem::GenerateParticles()
+void PollutionProblem::GenerateParticles(std::size_t i_number_of_particles)
   {
     if(!m_particles.empty())
       {
         m_particles.clear();
         m_curr_time = 0.0;
       }
-    std::size_t N = 500;
     double x = 0, y = 0;
-    for(; m_particles.size() < N;)
+    for(; m_particles.size() < i_number_of_particles;)
       {
         x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * 2.0 * m_radius;
         y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * 2.0 * m_radius;

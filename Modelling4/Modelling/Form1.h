@@ -3,6 +3,7 @@
 #include "Drawer.h"
 #include "Model.h"
 #include "PollutionProblem.h"
+#include "SulfurParticle.h"
 namespace Modelling {
 
 	using namespace System;
@@ -63,6 +64,10 @@ namespace Modelling {
   private: System::Windows::Forms::Label^  label5;
   private: System::Windows::Forms::TextBox^  textBox6;
   private: System::Windows::Forms::Label^  label6;
+  private: System::Windows::Forms::TextBox^  textBox7;
+  private: System::Windows::Forms::Label^  label7;
+  private: System::Windows::Forms::Label^  label8;
+  private: System::Windows::Forms::TextBox^  textBox8;
   private: System::ComponentModel::IContainer^  components;
   protected: 
 
@@ -179,7 +184,7 @@ namespace Modelling {
       int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 16, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
       double 
         max_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())), 
-        min_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())) , 
+        min_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())) ,
         maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       Vector2D curr_point;
@@ -255,6 +260,60 @@ namespace Modelling {
         for(std::size_t i = 0; i < particles.size(); ++i)
           m_drawer->DrawPoint(e, particles[i].GetLocation().X(), particles[i].GetLocation().Y(), 0xFFFF0000);
       }
+
+    //-------------------------------------
+
+    void CalcPollutionColors()
+      {
+        std::vector<SulfurParticle> parts = probl.GetParticles();
+        std::vector<std::vector<double>> conc(colors_for_conc.size());
+        double xstep = (m_drawer->GetMaxX() - m_drawer->GetMinX()) / (colors_for_conc[0].size() - 1),
+          ystep = (m_drawer->GetMaxY() - m_drawer->GetMinY()) / (colors_for_conc.size() - 1);
+        for(std::size_t i = 0; i < conc.size(); ++i)
+          conc[i].resize(colors_for_conc[i].size());
+        for(std::size_t i = 0; i < parts.size(); ++i)
+          {
+            Vector2D loc = parts[i].GetLocation();
+            int i_idx = static_cast<int>((loc.X() - m_drawer->GetMinX()) / xstep),
+              j_idx = static_cast<int>((loc.Y() - m_drawer->GetMinY()) / ystep);
+            conc[i_idx][j_idx] += 1.0;
+          }
+        double min_c = conc[0][0] / parts.size(), max_c = conc[0][0] / parts.size();
+        for(std::size_t i = 0; i < conc.size(); ++i)
+          for(std::size_t j = 0; j < conc[i].size(); ++j)
+            {
+              conc[i][j] /= parts.size();
+              if(min_c > conc[i][j])
+                min_c = conc[i][j];
+              if(max_c < conc[i][j])
+                max_c = conc[i][j];
+            }
+        int number_of_colors = 32;
+        for(std::size_t i = 0; i < conc.size(); ++i)
+          for(std::size_t j = 0; j < conc[i].size(); ++j)
+            {
+              double coef = (conc[i][j] - min_c) / (max_c - min_c);
+              int color = 0, col = 0;
+              col = 255 - static_cast<int>(static_cast<int>(number_of_colors * coef) * 255.0 / number_of_colors);
+              color = 0xFF000000 + col + (col << 8) + (255 << 16);
+              colors_for_conc[i][j] = color;
+            }
+
+      }
+    void FillConcColors(const std::vector<std::vector<int>>& i_colors)
+      {
+        Graphics^ e = Graphics::FromImage(pictureBox1->Image);
+        e->SmoothingMode = SmoothingMode::HighSpeed;
+        double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
+          minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
+        double ystep = (maxy - miny) / (i_colors.size() - 1),
+          xstep = (maxx - minx) / (i_colors[0].size() - 1);
+        for(std::size_t i = 0; i < i_colors.size(); ++i)
+          for(std::size_t j = 0; j < i_colors[i].size(); ++j)
+            {
+            m_drawer->DrawRect(e, minx + i * (maxx - minx) / (i_colors[i].size() - 1), miny + j * (maxy - miny) / (i_colors.size() - 1), xstep, ystep, i_colors[i][j]);
+            }
+      }
 #pragma region Windows Form Designer generated code
 		/// <summary>
 		/// Required method for Designer support - do not modify
@@ -283,6 +342,10 @@ namespace Modelling {
     this->label5 = (gcnew System::Windows::Forms::Label());
     this->textBox6 = (gcnew System::Windows::Forms::TextBox());
     this->label6 = (gcnew System::Windows::Forms::Label());
+    this->textBox7 = (gcnew System::Windows::Forms::TextBox());
+    this->label7 = (gcnew System::Windows::Forms::Label());
+    this->label8 = (gcnew System::Windows::Forms::Label());
+    this->textBox8 = (gcnew System::Windows::Forms::TextBox());
     (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->BeginInit();
     this->SuspendLayout();
     // 
@@ -464,11 +527,49 @@ namespace Modelling {
     this->label6->TabIndex = 20;
     this->label6->Text = L"Radius";
     // 
+    // textBox7
+    // 
+    this->textBox7->Enabled = false;
+    this->textBox7->Location = System::Drawing::Point(655, 367);
+    this->textBox7->Name = L"textBox7";
+    this->textBox7->Size = System::Drawing::Size(86, 20);
+    this->textBox7->TabIndex = 21;
+    // 
+    // label7
+    // 
+    this->label7->AutoSize = true;
+    this->label7->Location = System::Drawing::Point(597, 367);
+    this->label7->Name = L"label7";
+    this->label7->Size = System::Drawing::Size(51, 13);
+    this->label7->TabIndex = 22;
+    this->label7->Text = L"RowNum";
+    // 
+    // label8
+    // 
+    this->label8->AutoSize = true;
+    this->label8->Location = System::Drawing::Point(597, 393);
+    this->label8->Name = L"label8";
+    this->label8->Size = System::Drawing::Size(44, 13);
+    this->label8->TabIndex = 23;
+    this->label8->Text = L"ColNum";
+    // 
+    // textBox8
+    // 
+    this->textBox8->Enabled = false;
+    this->textBox8->Location = System::Drawing::Point(654, 393);
+    this->textBox8->Name = L"textBox8";
+    this->textBox8->Size = System::Drawing::Size(86, 20);
+    this->textBox8->TabIndex = 24;
+    // 
     // Form1
     // 
     this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
     this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
     this->ClientSize = System::Drawing::Size(754, 662);
+    this->Controls->Add(this->textBox8);
+    this->Controls->Add(this->label8);
+    this->Controls->Add(this->label7);
+    this->Controls->Add(this->textBox7);
     this->Controls->Add(this->label6);
     this->Controls->Add(this->textBox6);
     this->Controls->Add(this->label5);
@@ -491,7 +592,6 @@ namespace Modelling {
     this->MinimumSize = System::Drawing::Size(100, 100);
     this->Name = L"Form1";
     this->Text = L"Form1";
-    this->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &Form1::Form1_Paint);
     this->Resize += gcnew System::EventHandler(this, &Form1::Form1_Resize);
     (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->EndInit();
     this->ResumeLayout(false);
@@ -509,6 +609,8 @@ namespace Modelling {
                  label4->Location = System::Drawing::Point(pictureBox1->Width, label4->Location.Y);
                  label5->Location = System::Drawing::Point(pictureBox1->Width, label5->Location.Y);
                  label6->Location = System::Drawing::Point(pictureBox1->Width, label6->Location.Y);
+                 label7->Location = System::Drawing::Point(pictureBox1->Width, label7->Location.Y);
+                 label8->Location = System::Drawing::Point(pictureBox1->Width, label8->Location.Y);
 
                  textBox2->Location = System::Drawing::Point(pictureBox1->Width + label3->Width, label2->Location.Y);
                  textBox3->Location = System::Drawing::Point(pictureBox1->Width + label3->Width, label3->Location.Y);
@@ -516,6 +618,8 @@ namespace Modelling {
                  textBox4->Location = System::Drawing::Point(pictureBox1->Width + label4->Width, label4->Location.Y);
                  textBox5->Location = System::Drawing::Point(pictureBox1->Width + label4->Width, label5->Location.Y);
                  textBox6->Location = System::Drawing::Point(pictureBox1->Width + label4->Width, label6->Location.Y);
+                 textBox7->Location = System::Drawing::Point(pictureBox1->Width + label4->Width, label7->Location.Y);
+                 textBox8->Location = System::Drawing::Point(pictureBox1->Width + label4->Width, label8->Location.Y);
 
                  button1->Location = System::Drawing::Point(textBox2->Location.X, button1->Location.Y);
                  button2->Location = System::Drawing::Point(textBox2->Location.X, button2->Location.Y);
@@ -538,11 +642,13 @@ namespace Modelling {
                  model.SetParams(Vector2D(Math::Cos(angle), Math::Sin(angle)), gamma);
                  if(radioButton4->Checked)
                    {
+                     if(!colors_for_conc.empty())
+                       colors_for_conc.clear();
                      double rad = System::Double::Parse(textBox6->Text, nfi_e),
                        avg_ttl = System::Double::Parse(textBox1->Text, nfi_e), 
                        posx = System::Double::Parse(textBox5->Text, nfi_e), 
                        posy = System::Double::Parse(textBox4->Text, nfi_e);
-                     probl.SetParams(rad, avg_ttl, Vector2D(posx, posy));
+                     probl.SetParams(rad, avg_ttl, 500, Vector2D(posx, posy));
                    }
                  to_draw = true;
                  first_time = true;
@@ -552,13 +658,9 @@ namespace Modelling {
 
              //-------------------------------------
 
-    private: System::Void Form1_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) 
-               {
-
-               }
-
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) 
            {
+             
              if(to_draw)
                {
                  if(!first_time)
@@ -567,23 +669,25 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
                      if(radioButton4->Checked)
                        probl.UpdateTime(model);
                    }
+
                  model.CalcGamma();
+
                  if(radioButton4->Checked)
                    probl.MoveParticles(model);
-               }
 
-             if(!model.GetCurrGamma().empty() && to_draw)
-               {
-                 ClearPicture();
-                 DrawAxes();
-                 DrawPoints();
-                 if(radioButton4->Checked)
-                   {  
-                     DrawParticles();
-                     if(probl.GetAvgTTL() < probl.GetCurrTime())
-                       to_draw = false;
+                 if(!model.GetCurrGamma().empty())
+                   {
+                     ClearPicture();
+                     DrawAxes();
+                     DrawPoints();
+                     if(radioButton4->Checked)
+                       {  
+                       DrawParticles();
+                       if(probl.GetAvgTTL() < probl.GetCurrTime())
+                         to_draw = false;
+                       }
+                     Invalidate(true);
                    }
-                 Invalidate(true);
                }
               first_time = false;             
            }
@@ -602,6 +706,20 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
                  CalcColors(Model::colors_by_phi, model, mode);
                  FillColors(Model::colors_by_phi);
                }
+             if(radioButton4->Checked)
+               {
+                 std::size_t N = System::Int32::Parse(textBox7->Text),
+                   M = System::Int32::Parse(textBox8->Text);
+                 if(N < 2)
+                   N = 2;
+                 if(M < 2)
+                   M = 2;
+                 colors_for_conc.resize(N);
+                 for(std::size_t i = 0; i < colors_for_conc.size(); ++i)
+                   colors_for_conc[i].resize(M);
+                 CalcPollutionColors();
+                 FillConcColors(colors_for_conc);
+               }
              DrawAxes();
              DrawPoints();
              Invalidate(true);
@@ -614,6 +732,8 @@ private: System::Void radioButton4_CheckedChanged(System::Object^  sender, Syste
                  textBox4->Enabled = true;
                  textBox5->Enabled = true;
                  textBox6->Enabled = true;
+                 textBox7->Enabled = true;
+                 textBox8->Enabled = true;
                }
              else
                {
@@ -621,6 +741,8 @@ private: System::Void radioButton4_CheckedChanged(System::Object^  sender, Syste
                  textBox4->Enabled = false;
                  textBox5->Enabled = false;
                  textBox6->Enabled = false;
+                 textBox7->Enabled = false;
+                 textBox8->Enabled = false;
                }
            }
 };
