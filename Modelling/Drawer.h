@@ -65,6 +65,15 @@ ref class Drawer
 
     //-------------------------------------
 
+    void DrawRect(System::Drawing::Graphics^ i_graphics, double i_x, double i_y, double i_width, double i_height, int i_color)
+      {
+        System::Drawing::Brush^ br = gcnew System::Drawing::SolidBrush( Color::FromArgb(i_color));
+        int x = ScaleX(i_x), y = ScaleY(i_y), x1 = ScaleX(i_x + i_width), y1 = ScaleY(i_y + i_height);
+        i_graphics->FillRectangle(br, x, y1, x1 - x, y - y1);
+      }
+
+    //-------------------------------------
+
     double GetMinX()
       {
       return m_minx;
