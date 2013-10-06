@@ -108,6 +108,7 @@
     </ClInclude>
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Palette.h" />
     <ClInclude Include="PollutionProblem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Drawer.h" />

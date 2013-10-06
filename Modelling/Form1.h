@@ -25,6 +25,7 @@ namespace Modelling {
 			InitializeComponent();
 		  pictureBox1->Image = gcnew Bitmap(pictureBox1->Size.Width, pictureBox1->Size.Height);
 		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -1.5, -1.5, 1.5, 1.5);
+      m_scale_drawer = gcnew Drawer(pictureBox2->Size.Width, pictureBox2->Size.Height, 0, 0, pictureBox2->Size.Width, pictureBox2->Size.Height);
 			//
 			//TODO: Add the constructor code here
 			//
@@ -41,7 +42,7 @@ namespace Modelling {
 			}
 		}
   private: System::Windows::Forms::PictureBox^  pictureBox1;
-           Drawer^ m_drawer;
+           Drawer^ m_drawer, ^m_scale_drawer;
            bool to_draw, first_time;
 
   private: System::Windows::Forms::TextBox^  textBox2;
@@ -68,6 +69,7 @@ namespace Modelling {
   private: System::Windows::Forms::Label^  label7;
   private: System::Windows::Forms::Label^  label8;
   private: System::Windows::Forms::TextBox^  textBox8;
+  private: System::Windows::Forms::PictureBox^  pictureBox2;
   private: System::ComponentModel::IContainer^  components;
   protected: 
 
@@ -79,8 +81,9 @@ namespace Modelling {
 
     void ClearPicture()
       {
-      Graphics^ e = Graphics::FromImage(pictureBox1->Image);
+      Graphics^ e = Graphics::FromImage(pictureBox1->Image), ^g = Graphics::FromImage(pictureBox2->Image);
       e->Clear(Color::White);
+      g->Clear(Color::White);
       }
 
     //-------------------------------------
@@ -346,7 +349,9 @@ namespace Modelling {
     this->label7 = (gcnew System::Windows::Forms::Label());
     this->label8 = (gcnew System::Windows::Forms::Label());
     this->textBox8 = (gcnew System::Windows::Forms::TextBox());
+    this->pictureBox2 = (gcnew System::Windows::Forms::PictureBox());
     (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->BeginInit();
+    (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox2))->BeginInit();
     this->SuspendLayout();
     // 
     // pictureBox1
@@ -354,6 +359,7 @@ namespace Modelling {
     this->pictureBox1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
       | System::Windows::Forms::AnchorStyles::Left));
     this->pictureBox1->BackColor = System::Drawing::Color::White;
+    this->pictureBox1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
     this->pictureBox1->Location = System::Drawing::Point(0, 0);
     this->pictureBox1->Name = L"pictureBox1";
     this->pictureBox1->Size = System::Drawing::Size(597, 664);
@@ -362,14 +368,14 @@ namespace Modelling {
     // 
     // textBox2
     // 
-    this->textBox2->Location = System::Drawing::Point(644, 62);
+    this->textBox2->Location = System::Drawing::Point(644, 12);
     this->textBox2->Name = L"textBox2";
     this->textBox2->Size = System::Drawing::Size(86, 20);
     this->textBox2->TabIndex = 2;
     // 
     // label2
     // 
-    this->label2->Location = System::Drawing::Point(597, 62);
+    this->label2->Location = System::Drawing::Point(597, 12);
     this->label2->Name = L"label2";
     this->label2->Size = System::Drawing::Size(41, 20);
     this->label2->TabIndex = 4;
@@ -377,7 +383,7 @@ namespace Modelling {
     // 
     // button1
     // 
-    this->button1->Location = System::Drawing::Point(644, 114);
+    this->button1->Location = System::Drawing::Point(644, 64);
     this->button1->Name = L"button1";
     this->button1->Size = System::Drawing::Size(86, 21);
     this->button1->TabIndex = 6;
@@ -387,14 +393,14 @@ namespace Modelling {
     // 
     // textBox3
     // 
-    this->textBox3->Location = System::Drawing::Point(644, 88);
+    this->textBox3->Location = System::Drawing::Point(644, 38);
     this->textBox3->Name = L"textBox3";
     this->textBox3->Size = System::Drawing::Size(86, 20);
     this->textBox3->TabIndex = 5;
     // 
     // label3
     // 
-    this->label3->Location = System::Drawing::Point(597, 88);
+    this->label3->Location = System::Drawing::Point(597, 38);
     this->label3->Name = L"label3";
     this->label3->Size = System::Drawing::Size(46, 20);
     this->label3->TabIndex = 7;
@@ -407,7 +413,7 @@ namespace Modelling {
     // 
     // button2
     // 
-    this->button2->Location = System::Drawing::Point(644, 141);
+    this->button2->Location = System::Drawing::Point(644, 91);
     this->button2->Name = L"button2";
     this->button2->Size = System::Drawing::Size(86, 21);
     this->button2->TabIndex = 8;
@@ -419,7 +425,7 @@ namespace Modelling {
     // 
     this->radioButton1->AutoSize = true;
     this->radioButton1->Checked = true;
-    this->radioButton1->Location = System::Drawing::Point(644, 168);
+    this->radioButton1->Location = System::Drawing::Point(644, 118);
     this->radioButton1->Name = L"radioButton1";
     this->radioButton1->Size = System::Drawing::Size(87, 17);
     this->radioButton1->TabIndex = 9;
@@ -430,7 +436,7 @@ namespace Modelling {
     // radioButton2
     // 
     this->radioButton2->AutoSize = true;
-    this->radioButton2->Location = System::Drawing::Point(644, 191);
+    this->radioButton2->Location = System::Drawing::Point(644, 141);
     this->radioButton2->Name = L"radioButton2";
     this->radioButton2->Size = System::Drawing::Size(86, 17);
     this->radioButton2->TabIndex = 10;
@@ -440,7 +446,7 @@ namespace Modelling {
     // radioButton3
     // 
     this->radioButton3->AutoSize = true;
-    this->radioButton3->Location = System::Drawing::Point(644, 214);
+    this->radioButton3->Location = System::Drawing::Point(644, 164);
     this->radioButton3->Name = L"radioButton3";
     this->radioButton3->Size = System::Drawing::Size(85, 17);
     this->radioButton3->TabIndex = 11;
@@ -450,7 +456,7 @@ namespace Modelling {
     // radioButton4
     // 
     this->radioButton4->AutoSize = true;
-    this->radioButton4->Location = System::Drawing::Point(644, 237);
+    this->radioButton4->Location = System::Drawing::Point(644, 187);
     this->radioButton4->Name = L"radioButton4";
     this->radioButton4->Size = System::Drawing::Size(105, 17);
     this->radioButton4->TabIndex = 12;
@@ -462,7 +468,7 @@ namespace Modelling {
     // textBox1
     // 
     this->textBox1->Enabled = false;
-    this->textBox1->Location = System::Drawing::Point(655, 263);
+    this->textBox1->Location = System::Drawing::Point(655, 213);
     this->textBox1->Name = L"textBox1";
     this->textBox1->Size = System::Drawing::Size(86, 20);
     this->textBox1->TabIndex = 13;
@@ -470,7 +476,7 @@ namespace Modelling {
     // label1
     // 
     this->label1->AutoSize = true;
-    this->label1->Location = System::Drawing::Point(598, 263);
+    this->label1->Location = System::Drawing::Point(597, 213);
     this->label1->Name = L"label1";
     this->label1->Size = System::Drawing::Size(30, 13);
     this->label1->TabIndex = 14;
@@ -479,7 +485,7 @@ namespace Modelling {
     // textBox4
     // 
     this->textBox4->Enabled = false;
-    this->textBox4->Location = System::Drawing::Point(655, 315);
+    this->textBox4->Location = System::Drawing::Point(655, 265);
     this->textBox4->Name = L"textBox4";
     this->textBox4->Size = System::Drawing::Size(86, 20);
     this->textBox4->TabIndex = 16;
@@ -487,7 +493,7 @@ namespace Modelling {
     // textBox5
     // 
     this->textBox5->Enabled = false;
-    this->textBox5->Location = System::Drawing::Point(655, 289);
+    this->textBox5->Location = System::Drawing::Point(655, 239);
     this->textBox5->Name = L"textBox5";
     this->textBox5->Size = System::Drawing::Size(86, 20);
     this->textBox5->TabIndex = 15;
@@ -495,7 +501,7 @@ namespace Modelling {
     // label4
     // 
     this->label4->AutoSize = true;
-    this->label4->Location = System::Drawing::Point(597, 289);
+    this->label4->Location = System::Drawing::Point(597, 239);
     this->label4->Name = L"label4";
     this->label4->Size = System::Drawing::Size(58, 13);
     this->label4->TabIndex = 17;
@@ -504,7 +510,7 @@ namespace Modelling {
     // label5
     // 
     this->label5->AutoSize = true;
-    this->label5->Location = System::Drawing::Point(597, 315);
+    this->label5->Location = System::Drawing::Point(597, 265);
     this->label5->Name = L"label5";
     this->label5->Size = System::Drawing::Size(58, 13);
     this->label5->TabIndex = 18;
@@ -513,7 +519,7 @@ namespace Modelling {
     // textBox6
     // 
     this->textBox6->Enabled = false;
-    this->textBox6->Location = System::Drawing::Point(654, 341);
+    this->textBox6->Location = System::Drawing::Point(654, 291);
     this->textBox6->Name = L"textBox6";
     this->textBox6->Size = System::Drawing::Size(86, 20);
     this->textBox6->TabIndex = 19;
@@ -521,7 +527,7 @@ namespace Modelling {
     // label6
     // 
     this->label6->AutoSize = true;
-    this->label6->Location = System::Drawing::Point(598, 341);
+    this->label6->Location = System::Drawing::Point(597, 291);
     this->label6->Name = L"label6";
     this->label6->Size = System::Drawing::Size(40, 13);
     this->label6->TabIndex = 20;
@@ -530,7 +536,7 @@ namespace Modelling {
     // textBox7
     // 
     this->textBox7->Enabled = false;
-    this->textBox7->Location = System::Drawing::Point(655, 367);
+    this->textBox7->Location = System::Drawing::Point(655, 317);
     this->textBox7->Name = L"textBox7";
     this->textBox7->Size = System::Drawing::Size(86, 20);
     this->textBox7->TabIndex = 21;
@@ -538,7 +544,7 @@ namespace Modelling {
     // label7
     // 
     this->label7->AutoSize = true;
-    this->label7->Location = System::Drawing::Point(597, 367);
+    this->label7->Location = System::Drawing::Point(597, 317);
     this->label7->Name = L"label7";
     this->label7->Size = System::Drawing::Size(51, 13);
     this->label7->TabIndex = 22;
@@ -547,7 +553,7 @@ namespace Modelling {
     // label8
     // 
     this->label8->AutoSize = true;
-    this->label8->Location = System::Drawing::Point(597, 393);
+    this->label8->Location = System::Drawing::Point(597, 343);
     this->label8->Name = L"label8";
     this->label8->Size = System::Drawing::Size(44, 13);
     this->label8->TabIndex = 23;
@@ -556,16 +562,27 @@ namespace Modelling {
     // textBox8
     // 
     this->textBox8->Enabled = false;
-    this->textBox8->Location = System::Drawing::Point(654, 393);
+    this->textBox8->Location = System::Drawing::Point(654, 343);
     this->textBox8->Name = L"textBox8";
     this->textBox8->Size = System::Drawing::Size(86, 20);
     this->textBox8->TabIndex = 24;
+    // 
+    // pictureBox2
+    // 
+    this->pictureBox2->BackColor = System::Drawing::Color::White;
+    this->pictureBox2->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+    this->pictureBox2->Location = System::Drawing::Point(597, 369);
+    this->pictureBox2->Name = L"pictureBox2";
+    this->pictureBox2->Size = System::Drawing::Size(143, 281);
+    this->pictureBox2->TabIndex = 25;
+    this->pictureBox2->TabStop = false;
     // 
     // Form1
     // 
     this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
     this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
     this->ClientSize = System::Drawing::Size(754, 662);
+    this->Controls->Add(this->pictureBox2);
     this->Controls->Add(this->textBox8);
     this->Controls->Add(this->label8);
     this->Controls->Add(this->label7);
@@ -594,6 +611,7 @@ namespace Modelling {
     this->Text = L"Form1";
     this->Resize += gcnew System::EventHandler(this, &Form1::Form1_Resize);
     (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->EndInit();
+    (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox2))->EndInit();
     this->ResumeLayout(false);
     this->PerformLayout();
 
@@ -603,6 +621,9 @@ namespace Modelling {
     private: System::Void Form1_Resize(System::Object^  sender, System::EventArgs^  e) 
                {
                  ReshapePictureBox1();
+                 m_drawer->SetTargetResolution(pictureBox1->Size.Width, pictureBox1->Size.Height);
+                 pictureBox2->Location = System::Drawing::Point(pictureBox1->Width, pictureBox2->Location.Y);
+
                  label2->Location = System::Drawing::Point(pictureBox1->Width, label2->Location.Y);
                  label3->Location = System::Drawing::Point(pictureBox1->Width, label3->Location.Y);
                  label1->Location = System::Drawing::Point(pictureBox1->Width, label1->Location.Y);
@@ -627,7 +648,6 @@ namespace Modelling {
                  radioButton2->Location = System::Drawing::Point(textBox2->Location.X, radioButton2->Location.Y);
                  radioButton3->Location = System::Drawing::Point(textBox2->Location.X, radioButton3->Location.Y);
                  radioButton4->Location = System::Drawing::Point(textBox2->Location.X, radioButton4->Location.Y);
-                 m_drawer->SetTargetResolution(pictureBox1->Size.Width, pictureBox1->Size.Height);
 
                }
 
