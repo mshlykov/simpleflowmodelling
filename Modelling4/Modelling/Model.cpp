@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "Model.h"
 #include "Matrix.h"
-
-std::vector<std::vector<int>> Model::colors_by_phi;
+#include "Palette.h"
+std::vector<std::vector<int>> Model::colors_matr;
 
 using System::Math;
 Model model;
-
+Palette palette;
 Model::Model()
   {
   Init();

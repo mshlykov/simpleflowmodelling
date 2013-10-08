@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "PollutionProblem.h"
 #include "SulfurParticle.h"
+#include "Palette.h"
 namespace Modelling {
 
 	using namespace System;
@@ -13,7 +14,6 @@ namespace Modelling {
 	using namespace System::Data;
 	using namespace System::Drawing;
   using namespace System::Globalization;
-
 	/// <summary>
 	/// Summary for Form1
 	/// </summary>
@@ -23,7 +23,9 @@ namespace Modelling {
 		Form1(void)
 		{
 			InitializeComponent();
-		  pictureBox1->Image = gcnew Bitmap(pictureBox1->Size.Width, pictureBox1->Size.Height);
+		  pictureBox1->Image = gcnew Bitmap(pictureBox1->ClientRectangle.Width, pictureBox1->ClientRectangle.Height);
+      pictureBox2->Image = gcnew Bitmap(pictureBox2->ClientRectangle.Width, pictureBox2->ClientRectangle.Height);
+      //pictureBox2->ClientRectangle.Width
 		  m_drawer = gcnew Drawer(pictureBox1->Size.Width, pictureBox1->Size.Height, -1.5, -1.5, 1.5, 1.5);
       m_scale_drawer = gcnew Drawer(pictureBox2->Size.Width, pictureBox2->Size.Height, 0, 0, pictureBox2->Size.Width, pictureBox2->Size.Height);
 			//
@@ -44,7 +46,6 @@ namespace Modelling {
   private: System::Windows::Forms::PictureBox^  pictureBox1;
            Drawer^ m_drawer, ^m_scale_drawer;
            bool to_draw, first_time;
-
   private: System::Windows::Forms::TextBox^  textBox2;
 
   private: System::Windows::Forms::Label^  label2;
@@ -79,11 +80,10 @@ namespace Modelling {
 		/// </summary>
 
 
-    void ClearPicture()
+    void ClearPicture(PictureBox^ i_picturebox)
       {
-      Graphics^ e = Graphics::FromImage(pictureBox1->Image), ^g = Graphics::FromImage(pictureBox2->Image);
+      Graphics^ e = Graphics::FromImage(i_picturebox->Image);
       e->Clear(Color::White);
-      g->Clear(Color::White);
       }
 
     //-------------------------------------
@@ -181,19 +181,19 @@ namespace Modelling {
             m_drawer->DrawPoint(e, cont[i][j].X(), cont[i][j].Y(), 0xFF000FFF);
       }
 
-    void CalcColors(std::vector<std::vector<int>>& o_colors_by_phi, const Model& i_model, int i_mode)
+    void CalcColors(std::vector<std::vector<int>>& o_colors_matr, const Model& i_model, int i_mode)
       {
-      o_colors_by_phi.clear();
-      int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 16, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
+      o_colors_matr.clear();
+      int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 10, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
       double 
-        max_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())), 
-        min_phi = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())) ,
+        max_value = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())), 
+        min_value = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())) ,
         maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       Vector2D curr_point;
-      std::vector<std::vector<double>> psi_matr, phi_matr;
-      o_colors_by_phi.resize(N);
-      phi_matr.resize(N);
+      std::vector<std::vector<double>> value_matr;
+      o_colors_matr.resize(N);
+      value_matr.resize(N);
       for(int i = 0; i < N; ++i)
         {
         curr_point.X() = minx + i * (maxx - minx) / (N - 1);
@@ -201,23 +201,23 @@ namespace Modelling {
         for(int j = 0; j < N; ++j)
           {
           curr_point.Y() = miny + j * (maxy - miny) / (N - 1);
-          phi_matr[i].push_back(i_mode == 0 ? i_model.CalcPhiSec(curr_point) : (i_mode == 1 ? i_model.CalcPsi(curr_point) : i_model.CalcCp(curr_point)));
+          value_matr[i].push_back(i_mode == 0 ? i_model.CalcPhiSec(curr_point) : (i_mode == 1 ? i_model.CalcPsi(curr_point) : i_model.CalcCp(curr_point)));
           
-          if(min_phi > phi_matr[i][j])
-            min_phi = phi_matr[i][j];
+          if(min_value > value_matr[i][j])
+            min_value = value_matr[i][j];
 
-          if(max_phi < phi_matr[i][j])
-            max_phi = phi_matr[i][j];
-          if(i_mode == 2 && phi_matr[i][j] > 1)
-            phi_matr[i][j] = 1;
+          if(max_value < value_matr[i][j])
+            max_value = value_matr[i][j];
+          if(i_mode == 2 && value_matr[i][j] > 1)
+            value_matr[i][j] = 1;
           }
         }
-      if (i_mode == 2 && max_phi > 1)
-        max_phi = 1;
+      if (i_mode == 2 && max_value > 1)
+        max_value = 1;
       for(int i = 0; i < N; ++i)
         for(int j = 0; j < N; ++j)
           {
-          double coef = 2.0 * (phi_matr[i][j] - min_phi) / (max_phi - min_phi);
+          double coef = 2.0 * (value_matr[i][j] - min_value) / (max_value - min_value);
 
           int color = 0;
 
@@ -234,7 +234,16 @@ namespace Modelling {
             }
 
           //int diff = static_cast<int>(0xFF * coef); 
-          o_colors_by_phi[i].push_back(color);
+          o_colors_matr[i].push_back(color);
+          }
+        palette.m_min_val = min_value;
+        palette.m_max_val = max_value;
+        palette.m_colors.resize(2 * number_of_colors);
+        for(std::size_t i = 0; i < number_of_colors; ++i)
+          {
+            int col = static_cast<int>(i * 255.0 / number_of_colors);
+            palette.m_colors[i] = 0xFF000000 + 255 + (col << 8) + (col << 16);
+            palette.m_colors[i + number_of_colors] = 0xFF000000 + (255 - col) + ((255 - col) << 8) + (255 << 16);
           }
 
       }
@@ -243,15 +252,26 @@ namespace Modelling {
 
     void FillColors(const std::vector<std::vector<int>>& i_colors)
       {
-      Graphics^ e = Graphics::FromImage(pictureBox1->Image);
-      e->SmoothingMode = SmoothingMode::HighSpeed;
-      double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
-        minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
-      for(std::size_t i = 0; i < i_colors.size(); ++i)
-        for(std::size_t j = 0; j < i_colors[i].size(); ++j)
-          {
-          m_drawer->DrawPoint(e, minx + i * (maxx - minx) / (i_colors[i].size() - 1), miny + j * (maxy - miny) / (i_colors.size() - 1), i_colors[i][j]);
-          }
+        Graphics^ e = Graphics::FromImage(pictureBox1->Image);
+        e->SmoothingMode = SmoothingMode::HighSpeed;
+        double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
+          minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
+        for(std::size_t i = 0; i < i_colors.size(); ++i)
+          for(std::size_t j = 0; j < i_colors[i].size(); ++j)
+            {
+            m_drawer->DrawPoint(e, minx + i * (maxx - minx) / (i_colors[i].size() - 1), miny + j * (maxy - miny) / (i_colors.size() - 1), i_colors[i][j]);
+            }
+        Graphics^ g = Graphics::FromImage(pictureBox2->Image);
+        maxx = m_scale_drawer->GetMaxX(), maxy = m_scale_drawer->GetMaxY(), 
+        minx = m_scale_drawer->GetMinX(), miny = m_scale_drawer->GetMinY();
+        double ystep = (maxy - miny) / (palette.m_colors.size() + 1);
+        for(std::size_t i = 0; i < palette.m_colors.size() + 1; ++i)
+          m_scale_drawer->DrawRect(g, 0.0, miny + (i + 0.5) * ystep, (maxx + minx) * 0.5, ystep, palette.m_colors[i] );
+        
+        for(std::size_t i = 0; i < palette.m_colors.size() + 1; ++i)
+          m_scale_drawer->DrawText(g, 
+          (palette.m_min_val + i * (palette.m_max_val - palette.m_min_val) / (palette.m_colors.size() + 1)).ToString("0.000"), 
+          (maxx - minx) * 0.5, miny + (i + 1) * ystep);
       }
 
     //-------------------------------------
@@ -277,8 +297,8 @@ namespace Modelling {
         for(std::size_t i = 0; i < parts.size(); ++i)
           {
             Vector2D loc = parts[i].GetLocation();
-            int i_idx = static_cast<int>((loc.X() - m_drawer->GetMinX()) / xstep),
-              j_idx = static_cast<int>((loc.Y() - m_drawer->GetMinY()) / ystep);
+            int i_idx = static_cast<int>(floor((loc.X() - m_drawer->GetMinX()) / xstep)),
+              j_idx = static_cast<int>(floor((loc.Y() - m_drawer->GetMinY()) / ystep));
             conc[i_idx][j_idx] += 1.0;
           }
         double min_c = conc[0][0] / parts.size(), max_c = conc[0][0] / parts.size();
@@ -291,7 +311,7 @@ namespace Modelling {
               if(max_c < conc[i][j])
                 max_c = conc[i][j];
             }
-        int number_of_colors = 32;
+        int number_of_colors = 16;
         for(std::size_t i = 0; i < conc.size(); ++i)
           for(std::size_t j = 0; j < conc[i].size(); ++j)
             {
@@ -301,6 +321,16 @@ namespace Modelling {
               color = 0xFF000000 + col + (col << 8) + (255 << 16);
               colors_for_conc[i][j] = color;
             }
+
+          palette.m_min_val = min_c;
+          palette.m_max_val = max_c;
+          palette.m_colors.resize(number_of_colors);
+          for(std::size_t i = 0; i < number_of_colors; ++i)
+            {
+            int col = static_cast<int>(i * 255.0 / number_of_colors);
+            palette.m_colors[i] = 0xFF000000 + (255 - col) + ((255 - col) << 8) + (255 << 16);
+            }
+
 
       }
     void FillConcColors(const std::vector<std::vector<int>>& i_colors)
@@ -316,6 +346,17 @@ namespace Modelling {
             {
             m_drawer->DrawRect(e, minx + i * (maxx - minx) / (i_colors[i].size() - 1), miny + j * (maxy - miny) / (i_colors.size() - 1), xstep, ystep, i_colors[i][j]);
             }
+        Graphics^ g = Graphics::FromImage(pictureBox2->Image);
+        maxx = m_scale_drawer->GetMaxX(), maxy = m_scale_drawer->GetMaxY(), 
+          minx = m_scale_drawer->GetMinX(), miny = m_scale_drawer->GetMinY();
+        ystep = (maxy - miny) / (palette.m_colors.size() + 1);
+        for(std::size_t i = 0; i < palette.m_colors.size() + 1; ++i)
+          m_scale_drawer->DrawRect(g, 0.0, miny + (i + 0.5) * ystep, (maxx + minx) * 0.5, ystep, palette.m_colors[i] );
+
+        for(std::size_t i = 0; i < palette.m_colors.size() + 1; ++i)
+          m_scale_drawer->DrawText(g, 
+          (palette.m_min_val + i * (palette.m_max_val - palette.m_min_val) / (palette.m_colors.size() + 1)).ToString("0.000"), 
+          (maxx - minx) * 0.5, miny + (i + 1) * ystep);
       }
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -673,7 +714,7 @@ namespace Modelling {
                  to_draw = true;
                  first_time = true;
                  model.ReInit();
-                 Model::colors_by_phi.clear();
+                 Model::colors_matr.clear();
                }
 
              //-------------------------------------
@@ -697,7 +738,7 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 
                  if(!model.GetCurrGamma().empty())
                    {
-                     ClearPicture();
+                     ClearPicture(pictureBox1);
                      DrawAxes();
                      DrawPoints();
                      if(radioButton4->Checked)
@@ -721,13 +762,15 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
              if(radioButton3->Checked)
                mode = 2;
              to_draw = false;
+             ClearPicture(pictureBox2);
              if(mode != -1)
                {
-                 CalcColors(Model::colors_by_phi, model, mode);
-                 FillColors(Model::colors_by_phi);
+                 CalcColors(Model::colors_matr, model, mode);
+                 FillColors(Model::colors_matr);
                }
              if(radioButton4->Checked)
                {
+                 colors_for_conc.clear();
                  std::size_t N = System::Int32::Parse(textBox7->Text),
                    M = System::Int32::Parse(textBox8->Text);
                  if(N < 2)
