@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector2D.h"
 #include <vector>
+struct Palette;
 typedef std::vector<Vector2D> Points;
 typedef std::vector<Points> Contours;
 class Model
@@ -36,7 +37,7 @@ class Model
     std::size_t GetSize() const;
     double GetDt() const;
 
-    static std::vector<std::vector<int>> colors_by_phi;
+    static std::vector<std::vector<int>> colors_matr;
 
 private:
     
@@ -49,3 +50,4 @@ private:
   };
 
 extern Model model;
+extern Palette palette;
