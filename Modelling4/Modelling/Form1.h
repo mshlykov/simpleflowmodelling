@@ -264,8 +264,8 @@ namespace Modelling {
         Graphics^ g = Graphics::FromImage(pictureBox2->Image);
         maxx = m_scale_drawer->GetMaxX(), maxy = m_scale_drawer->GetMaxY(), 
         minx = m_scale_drawer->GetMinX(), miny = m_scale_drawer->GetMinY();
-        double ystep = (maxy - miny) / (palette.m_colors.size() + 1);
-        for(std::size_t i = 0; i < palette.m_colors.size() + 1; ++i)
+        double ystep = (maxy - miny) / (palette.m_colors.size() + 1.0);
+        for(std::size_t i = 0; i < palette.m_colors.size(); ++i)
           m_scale_drawer->DrawRect(g, 0.0, miny + (i + 0.5) * ystep, (maxx + minx) * 0.5, ystep, palette.m_colors[i] );
         
         for(std::size_t i = 0; i < palette.m_colors.size() + 1; ++i)
@@ -290,8 +290,8 @@ namespace Modelling {
       {
         std::vector<SulfurParticle> parts = probl.GetParticles();
         std::vector<std::vector<double>> conc(colors_for_conc.size());
-        double xstep = (m_drawer->GetMaxX() - m_drawer->GetMinX()) / (colors_for_conc[0].size() - 1),
-          ystep = (m_drawer->GetMaxY() - m_drawer->GetMinY()) / (colors_for_conc.size() - 1);
+        double xstep = (m_drawer->GetMaxX() - m_drawer->GetMinX()) / (colors_for_conc.size()),
+          ystep = (m_drawer->GetMaxY() - m_drawer->GetMinY()) / (colors_for_conc[0].size());
         for(std::size_t i = 0; i < conc.size(); ++i)
           conc[i].resize(colors_for_conc[i].size());
         for(std::size_t i = 0; i < parts.size(); ++i)
@@ -322,14 +322,14 @@ namespace Modelling {
               colors_for_conc[i][j] = color;
             }
 
-          palette.m_min_val = min_c;
-          palette.m_max_val = max_c;
-          palette.m_colors.resize(number_of_colors);
-          for(std::size_t i = 0; i < number_of_colors; ++i)
-            {
-            int col = static_cast<int>(i * 255.0 / number_of_colors);
-            palette.m_colors[i] = 0xFF000000 + (255 - col) + ((255 - col) << 8) + (255 << 16);
-            }
+        palette.m_min_val = min_c;
+        palette.m_max_val = max_c;
+        palette.m_colors.resize(number_of_colors);
+        for(std::size_t i = 0; i < number_of_colors; ++i)
+          {
+          int col = static_cast<int>(i * 255.0 / number_of_colors);
+          palette.m_colors[i] = 0xFF000000 + (255 - col) + ((255 - col) << 8) + (255 << 16);
+          }
 
 
       }
@@ -339,18 +339,18 @@ namespace Modelling {
         e->SmoothingMode = SmoothingMode::HighSpeed;
         double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
           minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
-        double ystep = (maxy - miny) / (i_colors.size() - 1),
-          xstep = (maxx - minx) / (i_colors[0].size() - 1);
+        double ystep = (maxy - miny) / (i_colors[0].size()),
+          xstep = (maxx - minx) / (i_colors.size());
         for(std::size_t i = 0; i < i_colors.size(); ++i)
           for(std::size_t j = 0; j < i_colors[i].size(); ++j)
             {
-            m_drawer->DrawRect(e, minx + i * (maxx - minx) / (i_colors[i].size() - 1), miny + j * (maxy - miny) / (i_colors.size() - 1), xstep, ystep, i_colors[i][j]);
+            m_drawer->DrawRect(e, minx + i * xstep, miny + j * ystep, xstep, ystep, i_colors[i][j]);
             }
         Graphics^ g = Graphics::FromImage(pictureBox2->Image);
         maxx = m_scale_drawer->GetMaxX(), maxy = m_scale_drawer->GetMaxY(), 
           minx = m_scale_drawer->GetMinX(), miny = m_scale_drawer->GetMinY();
         ystep = (maxy - miny) / (palette.m_colors.size() + 1);
-        for(std::size_t i = 0; i < palette.m_colors.size() + 1; ++i)
+        for(std::size_t i = 0; i < palette.m_colors.size(); ++i)
           m_scale_drawer->DrawRect(g, 0.0, miny + (i + 0.5) * ystep, (maxx + minx) * 0.5, ystep, palette.m_colors[i] );
 
         for(std::size_t i = 0; i < palette.m_colors.size() + 1; ++i)
@@ -763,6 +763,7 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
                mode = 2;
              to_draw = false;
              ClearPicture(pictureBox2);
+             ClearPicture(pictureBox1);
              if(mode != -1)
                {
                  CalcColors(Model::colors_matr, model, mode);
@@ -777,9 +778,9 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
                    N = 2;
                  if(M < 2)
                    M = 2;
-                 colors_for_conc.resize(N);
+                 colors_for_conc.resize(M);
                  for(std::size_t i = 0; i < colors_for_conc.size(); ++i)
-                   colors_for_conc[i].resize(M);
+                   colors_for_conc[i].resize(N);
                  CalcPollutionColors();
                  FillConcColors(colors_for_conc);
                }
