@@ -299,7 +299,9 @@ namespace Modelling {
             Vector2D loc = parts[i].GetLocation();
             int i_idx = static_cast<int>(floor((loc.X() - m_drawer->GetMinX()) / xstep)),
               j_idx = static_cast<int>(floor((loc.Y() - m_drawer->GetMinY()) / ystep));
-            conc[i_idx][j_idx] += 1.0;
+            if(i_idx < conc.size())
+              if(j_idx < conc[i_idx].size())
+                conc[i_idx][j_idx] += 1.0;
           }
         double min_c = conc[0][0] / parts.size() / xstep / ystep, 
           max_c = conc[0][0] / parts.size()/ xstep / ystep;
