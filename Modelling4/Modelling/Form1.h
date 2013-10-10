@@ -301,11 +301,12 @@ namespace Modelling {
               j_idx = static_cast<int>(floor((loc.Y() - m_drawer->GetMinY()) / ystep));
             conc[i_idx][j_idx] += 1.0;
           }
-        double min_c = conc[0][0] / parts.size(), max_c = conc[0][0] / parts.size();
+        double min_c = conc[0][0] / parts.size() / xstep / ystep, 
+          max_c = conc[0][0] / parts.size()/ xstep / ystep;
         for(std::size_t i = 0; i < conc.size(); ++i)
           for(std::size_t j = 0; j < conc[i].size(); ++j)
             {
-              conc[i][j] /= parts.size();
+              conc[i][j] /= parts.size()*xstep*ystep;
               if(min_c > conc[i][j])
                 min_c = conc[i][j];
               if(max_c < conc[i][j])
