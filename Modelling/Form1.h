@@ -699,6 +699,8 @@ namespace Modelling {
 
     private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) 
                {
+                 ClearPicture(pictureBox1);
+                 ClearPicture(pictureBox2);
                  CultureInfo^ cf = gcnew CultureInfo( "en-US", false );
                  NumberFormatInfo^ nfi_e = cf->NumberFormat;
                  double angle = 2 * Math::PI * System::Double::Parse(textBox2->Text, nfi_e) / 360,
