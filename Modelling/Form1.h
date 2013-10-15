@@ -160,7 +160,7 @@ namespace Modelling {
             n_y = miny + j * (maxy - miny) / (N - 1);
           summ = model.CalcSpeed(Vector2D(n_x, n_y));
           if(i == 1 && j == 1)
-            scaler = 0.5 * (maxx - minx) / ((N - 1) * summ.Length());
+            scaler = 0.5 * (maxx - minx) / (N - 1);
           m_drawer->DrawLine(pen, e, n_x, n_y, n_x + summ.X() * scaler, n_y + summ.Y() * scaler);
           m_drawer->DrawPoint(e, n_x, n_y, 0xFF000000);
           }
