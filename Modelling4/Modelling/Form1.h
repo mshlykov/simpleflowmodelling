@@ -153,14 +153,13 @@ namespace Modelling {
       double maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY(), scaler = 1;
       Vector2D summ;
+      scaler = 0.5 * (maxx - minx) / (N - 1);
       for(int i = 1; i < N - 1; ++i)
         for(int j = 1; j < N - 1; ++j)
           {
           double n_x = minx + i * (maxx - minx) / (N - 1), 
             n_y = miny + j * (maxy - miny) / (N - 1);
           summ = model.CalcSpeed(Vector2D(n_x, n_y));
-          if(i == 1 && j == 1)
-            scaler = 0.5 * (maxx - minx) / (N - 1);
           m_drawer->DrawLine(pen, e, n_x, n_y, n_x + summ.X() * scaler, n_y + summ.Y() * scaler);
           m_drawer->DrawPoint(e, n_x, n_y, 0xFF000000);
           }
