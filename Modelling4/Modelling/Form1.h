@@ -185,8 +185,8 @@ namespace Modelling {
       o_colors_matr.clear();
       int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 10, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
       double 
-        max_value = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())), 
-        min_value = i_mode == 0 ? i_model.CalcPhi(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())) ,
+        max_value = i_mode == 0 ? i_model.CalcPhiSec(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())), 
+        min_value = i_mode == 0 ? i_model.CalcPhiSec(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : i_model.CalcCp(Vector2D())) ,
         maxx = m_drawer->GetMaxX(), maxy = m_drawer->GetMaxY(), 
         minx = m_drawer->GetMinX(), miny = m_drawer->GetMinY();
       Vector2D curr_point;
