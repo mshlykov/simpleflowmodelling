@@ -263,6 +263,7 @@ double Model::CalcPhiSec(const Vector2D& i_point) const
       }
 
     summ /= 2 * Math::PI;
+    summ += i_point.X() * m_velocity.X() + i_point.Y() * m_velocity.Y();
     return summ;
   }
 
