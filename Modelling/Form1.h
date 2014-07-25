@@ -187,7 +187,8 @@ namespace Modelling {
     void CalcColors(std::vector<std::vector<int>>& o_colors_matr, const Model& i_model, int i_mode)
       {
       o_colors_matr.clear();
-      int N = Math::Max(Width / 3, Height / 3) + 1, number_of_colors = 10, red_color = 0xFFFF0000, yellow_color = 0xFFFFFF00;
+      int N = Math::Max(Width / 3, Height / 3) + 1;
+      std::size_t number_of_colors = 10;
       double 
         max_value = i_mode == 0 ? i_model.CalcPhiSec(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : (i_mode == 2 ? i_model.CalcCp(Vector2D()) : (i_mode == 3 ? i_model.CalcPhi(Vector2D()) : i_model.CalcSpeed(Vector2D()).Length()))), 
         min_value = i_mode == 0 ? i_model.CalcPhiSec(Vector2D()) : (i_mode == 1 ? i_model.CalcPsi(Vector2D()) : (i_mode == 2 ? i_model.CalcCp(Vector2D()) : (i_mode == 3 ? i_model.CalcPhi(Vector2D()) : i_model.CalcSpeed(Vector2D()).Length()))) ,
@@ -300,7 +301,7 @@ namespace Modelling {
         for(std::size_t i = 0; i < parts.size(); ++i)
           {
             Vector2D loc = parts[i].GetLocation();
-            int i_idx = static_cast<int>(floor((loc.X() - m_drawer->GetMinX()) / xstep)),
+            std::size_t i_idx = static_cast<int>(floor((loc.X() - m_drawer->GetMinX()) / xstep)),
               j_idx = static_cast<int>(floor((loc.Y() - m_drawer->GetMinY()) / ystep));
             if(i_idx < conc.size())
               if(j_idx < conc[i_idx].size())
@@ -317,7 +318,7 @@ namespace Modelling {
               if(max_c < conc[i][j])
                 max_c = conc[i][j];
             }
-        int number_of_colors = 16;
+        std::size_t number_of_colors = 16;
         for(std::size_t i = 0; i < conc.size(); ++i)
           for(std::size_t j = 0; j < conc[i].size(); ++j)
             {
@@ -744,6 +745,7 @@ namespace Modelling {
                  button2->Location = System::Drawing::Point(textBox2->Location.X, button2->Location.Y);
                  button3->Location = System::Drawing::Point(textBox2->Location.X, button3->Location.Y);
                  button4->Location = System::Drawing::Point(textBox2->Location.X, button4->Location.Y);
+
                  radioButton1->Location = System::Drawing::Point(textBox2->Location.X, radioButton1->Location.Y);
                  radioButton2->Location = System::Drawing::Point(textBox2->Location.X, radioButton2->Location.Y);
                  radioButton3->Location = System::Drawing::Point(textBox2->Location.X, radioButton3->Location.Y);
@@ -805,9 +807,9 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
                      DrawPoints();
                      if(radioButton4->Checked)
                        {  
-                       DrawParticles();
-                       if(probl.GetAvgTTL() < probl.GetCurrTime())
-                         to_draw = false;
+                         DrawParticles();
+                         if(probl.GetAvgTTL() < probl.GetCurrTime())
+                           to_draw = false;
                        }
                      Invalidate(true);
                    }
@@ -877,20 +879,20 @@ private: System::Void radioButton4_CheckedChanged(System::Object^  sender, Syste
            }
 private: System::Void button3_Click(System::Object^  sender, System::EventArgs^  e) 
          {
-         double  view_width = m_drawer->GetMaxX() - m_drawer->GetMinX(),
-             view_height = m_drawer->GetMaxY() - m_drawer->GetMinY(),
-             x = (m_drawer->GetMaxX() + m_drawer->GetMinX()) * 0.5,
-             y = (m_drawer->GetMaxY() + m_drawer->GetMinY()) * 0.5, k = 0.75;
-           view_width *= k;
-           view_height *= k;
-           m_drawer->SetViewPort(x -  view_width / 2.0, y - view_height / 2.0, x + view_width / 2.0, y + view_height / 2.0);
-           if(!model.GetCurrGamma().empty())
-           {
-             ClearPicture(pictureBox1);
-             DrawAxes();
-             DrawPoints();
-             Invalidate(true);
-           }
+           double  view_width = m_drawer->GetMaxX() - m_drawer->GetMinX(),
+               view_height = m_drawer->GetMaxY() - m_drawer->GetMinY(),
+               x = (m_drawer->GetMaxX() + m_drawer->GetMinX()) * 0.5,
+               y = (m_drawer->GetMaxY() + m_drawer->GetMinY()) * 0.5, k = 0.75;
+             view_width *= k;
+             view_height *= k;
+             m_drawer->SetViewPort(x -  view_width / 2.0, y - view_height / 2.0, x + view_width / 2.0, y + view_height / 2.0);
+             if(!model.GetCurrGamma().empty())
+             {
+               ClearPicture(pictureBox1);
+               DrawAxes();
+               DrawPoints();
+               Invalidate(true);
+             }
          }
 private: System::Void button4_Click(System::Object^  sender, System::EventArgs^  e) 
          {

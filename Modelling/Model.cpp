@@ -9,48 +9,45 @@ Model model;
 Palette palette;
 Model::Model()
   {
-  Init();
+    Init();
   }
 
 //-------------------------------------
 
 void Model::Init()
   {
-  int N = 31;
-  m_contours.resize(2);
-  for(int i = 0; i < N; ++i)
-    m_contours[0].push_back(Vector2D(-0.5, 0.5 - double(i) / (N - 1)));
-  for(int i = 1; i < N; ++i)
-    m_contours[0].push_back(Vector2D(-0.5 + double(i) / (N - 1), -0.5));
-  for(int i = 1; i < N; ++i)
-    m_contours[0].push_back(Vector2D(0.5, -0.5 + double(i) / (N - 1)));
-  for(int i = 0; i < N; ++i)
-    m_contours[1].push_back(Vector2D(0, 0.5 - double(i) / (N - 1)));
-  m_delta = (m_contours[0][1] - m_contours[0][0]).Length();
-  for(std::size_t i = 0; i < m_contours.size(); ++i)
-    for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
-      {
-      m_colloc.push_back(0.5 * (m_contours[i][j] + m_contours[i][j + 1]));
-      if((m_contours[i][j + 1] - m_contours[i][j]).Length() < m_delta)
-        m_delta = (m_contours[i][j + 1] - m_contours[i][j]).Length();
-      m_normals.push_back((m_contours[i][j + 1] - m_contours[i][j]).Normalize().GetOrthogonal());
-      }
-  m_delta *= 0.49;
-  m_dt = 0;
-  m_contours[1].pop_back();
+    int N = 31;
+    m_contours.resize(2);
+    for(int i = 0; i < N; ++i)
+      m_contours[0].push_back(Vector2D(-0.5, 0.5 - double(i) / (N - 1)));
+    for(int i = 1; i < N; ++i)
+      m_contours[0].push_back(Vector2D(-0.5 + double(i) / (N - 1), -0.5));
+    for(int i = 1; i < N; ++i)
+      m_contours[0].push_back(Vector2D(0.5, -0.5 + double(i) / (N - 1)));
+    for(int i = 0; i < N; ++i)
+      m_contours[1].push_back(Vector2D(0, 0.5 - double(i) / (N - 1)));
+    m_delta = (m_contours[0][1] - m_contours[0][0]).Length();
+    for(std::size_t i = 0; i < m_contours.size(); ++i)
+      for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
+        {
+        m_colloc.push_back(0.5 * (m_contours[i][j] + m_contours[i][j + 1]));
+        if((m_contours[i][j + 1] - m_contours[i][j]).Length() < m_delta)
+          m_delta = (m_contours[i][j + 1] - m_contours[i][j]).Length();
+        m_normals.push_back((m_contours[i][j + 1] - m_contours[i][j]).Normalize().GetOrthogonal());
+        }
+    m_delta *= 0.49;
+    m_dt = 0;
+    m_contours[1].pop_back();
 
-  m_corners.push_back(m_contours[0][0]);
-  m_corners.push_back(m_contours[0][30]);
-  m_corners.push_back(m_contours[0][60]);
-  m_corners.push_back(m_contours[0][90]);
-  m_corners.push_back(m_contours[1][0]);
-  m_prev_gamma.resize(m_colloc.size() + 1);
-  m_curr_gamma.resize(m_colloc.size() + 1);
-  m_off_gamma.resize(5);
-  m_off_points.resize(5);
-
-  //for(int i = 0; i < m_curr_gamma.size(); ++i)
-    //m_curr_gamma[i] = 0;
+    m_corners.push_back(m_contours[0][0]);
+    m_corners.push_back(m_contours[0][30]);
+    m_corners.push_back(m_contours[0][60]);
+    m_corners.push_back(m_contours[0][90]);
+    m_corners.push_back(m_contours[1][0]);
+    m_prev_gamma.resize(m_colloc.size() + 1);
+    m_curr_gamma.resize(m_colloc.size() + 1);
+    m_off_gamma.resize(5);
+    m_off_points.resize(5);
   }
 
 //-------------------------------------
@@ -59,8 +56,8 @@ void Model::ReInit()
   {
     for(std::size_t i = 0; i < m_off_points.size(); ++i)
       {
-      model.m_off_points[i].clear();
-      model.m_off_gamma[i].clear();
+        model.m_off_points[i].clear();
+        model.m_off_gamma[i].clear();
       }
 
     for(std::size_t i = 0; i < m_prev_gamma.size(); ++i)
@@ -82,57 +79,51 @@ const Contours& Model::GetContours() const
 
 double Model::GetGamma(std::size_t i_i, std::size_t i_j) const
   {
-  std::size_t summ = 0;
-  for(std::size_t i = 0; i < i_i; ++i)
-    summ += m_contours[i].size();
-  return m_curr_gamma[summ + i_j];
+    std::size_t summ = 0;
+    for(std::size_t i = 0; i < i_i; ++i)
+      summ += m_contours[i].size();
+    return m_curr_gamma[summ + i_j];
   }
 
 //-------------------------------------
 
 void Model::CalcGamma()
   {
-    /*if(!m_curr_gamma.empty())
-      m_curr_gamma.clear();*/
 
     std::size_t M = m_colloc.size() + 1;  
     MatrSpace::Matrix A(M, M), b(M, 1);
-  
+
     for(std::size_t i = 0; i < M - 1; ++i)
-      {
+    {
       b(i, 0) = m_velocity * m_normals[i] * (-1);
-    
+
       for(std::size_t j = 0; j < m_off_points.size(); ++j)
         for(std::size_t k = 0; k < m_off_points[j].size(); ++k)
           b(i, 0) -= m_off_gamma[j][k] * V(m_colloc[i], m_off_points[j][k]) * m_normals[i];
 
       A(M - 1, i) = 1;
 
-      /*for(std::size_t j = 0; j < M; ++j)
-        A(i, j) = V(j, m_colloc[i]) * m_normals[i];*/
-
       for(std::size_t j = 0, summ = 0; j < m_contours.size(); ++j)
+      {
+        for(std::size_t k = 0; k < m_contours[j].size(); ++k)
         {
-          for(std::size_t k = 0; k < m_contours[j].size(); ++k)
-            {
-              A(i, summ + k) = V(m_colloc[i], m_contours[j][k]) * m_normals[i];
-            }
-          summ += m_contours[j].size();
+          A(i, summ + k) = V(m_colloc[i], m_contours[j][k]) * m_normals[i];
         }
+        summ += m_contours[j].size();
       }
-  
+    }
+
     A(M - 1, M - 1) = 1;
     b(M - 1 , 0) = m_gamma;
     for(std::size_t j = 0; j < m_off_points.size(); ++j)
       for(std::size_t k = 0; k < m_off_points[j].size(); ++k)
         b(M - 1, 0) -= m_off_gamma[j][k];
     b = A.SolveGauss(b);
-    //m_curr_gamma.resize(M);
     for(std::size_t i = 0; i < m_curr_gamma.size(); ++i)
-      {
+    {
       m_prev_gamma[i] = m_curr_gamma[i];
       m_curr_gamma[i] = b(i, 0);
-      }
+    }
   }
 
 //-------------------------------------
@@ -193,8 +184,8 @@ double Model::CalcPhiSec(const Vector2D& i_point) const
           orth = orth.GetOrthogonal();
           if(d < delta_star * delta_star)
             {
-            d = delta_star * delta_star;
-            //orth = orth * delta_star;
+              d = delta_star * delta_star;
+              //orth = orth * delta_star;
             }
           summ += Q[i] * (orth * diff) / d;
         }
@@ -217,8 +208,8 @@ double Model::CalcPhiSec(const Vector2D& i_point) const
         orth = orth.GetOrthogonal();
         if(d < delta_star * delta_star)
           {
-          d = delta_star * delta_star;
-          //orth = orth * delta_star;
+            d = delta_star * delta_star;
+            //orth = orth * delta_star;
           }
         summ += Q[4] * (orth * diff) / d;
       }
@@ -226,22 +217,22 @@ double Model::CalcPhiSec(const Vector2D& i_point) const
     //final
     for(std::size_t i = 0; i < m_contours[0].size() - 1; ++i)
       {
-      diff = m_contours[0][i + 1] - m_contours[0][i];
-      xstar = 0.5 * (m_contours[0][i + 1] + m_contours[0][i]);
-      Q[0] += m_curr_gamma[i];
-      if(i % 30 == 0 && i != 0)
-        Q[0] += Q[i / 30];
-      if(i == 45)
-        Q[0] += Q[4];
-      orth = i_point - xstar;
-      d = orth.Length2();
-      orth = orth.GetOrthogonal();
-      if(d < delta_star * delta_star)
+        diff = m_contours[0][i + 1] - m_contours[0][i];
+        xstar = 0.5 * (m_contours[0][i + 1] + m_contours[0][i]);
+        Q[0] += m_curr_gamma[i];
+        if(i % 30 == 0 && i != 0)
+          Q[0] += Q[i / 30];
+        if(i == 45)
+          Q[0] += Q[4];
+        orth = i_point - xstar;
+        d = orth.Length2();
+        orth = orth.GetOrthogonal();
+        if(d < delta_star * delta_star)
         {
-        d = delta_star * delta_star;
-        orth = orth * delta_star;
+          d = delta_star * delta_star;
+          orth = orth * delta_star;
         }
-      summ += Q[0] * (orth * diff) / d;
+        summ += Q[0] * (orth * diff) / d;
       }
 
     double tt = m_curr_gamma[90] + Q[3];
@@ -252,12 +243,12 @@ double Model::CalcPhiSec(const Vector2D& i_point) const
           dy = i_point.Y() - m_contours[0][90].Y(), pointarg = 0;
         if(! (Math::Abs(dx) < 0.00001))
           {
-          if(dx > 0 && dy > 0)
-            pointarg = Math::Atan(dy / dx);
-          else if(dx < 0)
-            pointarg = Math::Atan(dy / dx) + Math::PI;
-          else if(dx > 0 && dy < 0)
-            pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
+            if(dx > 0 && dy > 0)
+              pointarg = Math::Atan(dy / dx);
+            else if(dx < 0)
+              pointarg = Math::Atan(dy / dx) + Math::PI;
+            else if(dx > 0 && dy < 0)
+              pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
           }
         summ += m_gamma * pointarg;
       }
@@ -275,39 +266,39 @@ double Model::CalcPhi(const Vector2D& i_point) const
     for(std::size_t i = 0, curr_idx = 0; i < m_contours.size(); ++i)
       {
 
-      for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
+        for(std::size_t j = 0; j < m_contours[i].size() - 1; ++j)
         {
-        double pointarg = 0, dx = i_point.X() - m_contours[i][j].X(), 
-          dy = i_point.Y() - m_contours[i][j].Y();
-        if(! (Math::Abs(dx) < 0.00001))
+          double pointarg = 0, dx = i_point.X() - m_contours[i][j].X(), 
+            dy = i_point.Y() - m_contours[i][j].Y();
+          if(! (Math::Abs(dx) < 0.00001))
           {
-          if(dx > 0 && dy > 0)
-            pointarg = Math::Atan(dy / dx);
-          else if(dx < 0)
-            pointarg = Math::Atan(dy / dx) + Math::PI;
-          else if(dx > 0 && dy < 0)
-            pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
+            if(dx > 0 && dy > 0)
+              pointarg = Math::Atan(dy / dx);
+            else if(dx < 0)
+              pointarg = Math::Atan(dy / dx) + Math::PI;
+            else if(dx > 0 && dy < 0)
+              pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
           }
-        summ += pointarg * m_curr_gamma[curr_idx + j];
+          summ += pointarg * m_curr_gamma[curr_idx + j];
         }
-      curr_idx += m_contours[i].size();
+        curr_idx += m_contours[i].size();
       }
 
     for(std::size_t i = 0; i < m_off_points.size(); ++i)
       for(std::size_t j = 0; j < m_off_points[i].size(); ++j)
         {
-        double pointarg = 0, dx = i_point.X() - m_off_points[i][j].X(), 
-          dy = i_point.Y() - m_off_points[i][j].Y();
-        if(! (Math::Abs(dx) < 0.00001))
+          double pointarg = 0, dx = i_point.X() - m_off_points[i][j].X(), 
+            dy = i_point.Y() - m_off_points[i][j].Y();
+          if(! (Math::Abs(dx) < 0.00001))
           {
-          if(dx > 0 && dy > 0)
-            pointarg = Math::Atan(dy / dx);
-          else if(dx < 0)
-            pointarg = Math::Atan(dy / dx) + Math::PI;
-          else if(dx > 0 && dy < 0)
-            pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
+            if(dx > 0 && dy > 0)
+              pointarg = Math::Atan(dy / dx);
+            else if(dx < 0)
+              pointarg = Math::Atan(dy / dx) + Math::PI;
+            else if(dx > 0 && dy < 0)
+              pointarg = Math::Atan(dy / dx) + 2 * Math::PI;
           }
-        summ += pointarg * m_off_gamma[i][j];
+          summ += pointarg * m_off_gamma[i][j];
         }
 
     summ /= (2 * Math::PI);
