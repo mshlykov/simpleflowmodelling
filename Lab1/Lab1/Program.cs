@@ -13,6 +13,7 @@ namespace Lab1
         [STAThread]
         static void Main()
         {
+            // ahaha
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(FormController.GetMainForm());
