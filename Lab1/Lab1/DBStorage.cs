@@ -14,6 +14,9 @@ namespace Lab1
     {
         private static OleDbConnection m_connection;
         // comment
+        // comment 2
+        private readonly int m_bugaga;
+        private readonly Dictionary<int, int> m_bugaga_dictionary;
         public static Dictionary<string, string> m_user_queries;
         static DBStorage()
         {
