@@ -13,6 +13,7 @@ namespace Lab1
     class DBStorage
     {
         private static OleDbConnection m_connection;
+        // comment
         public static Dictionary<string, string> m_user_queries;
         static DBStorage()
         {
