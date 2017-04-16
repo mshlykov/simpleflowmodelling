@@ -18,9 +18,6 @@ namespace Lab1
         private readonly int m_bugaga;
         private readonly Dictionary<int, int> m_bugaga_dictionary;
         public static int[] bugaga_array;
-        private static string m_double1111;
-        private static double m_int1111;
-        //comment 3 
         public static Dictionary<string, string> m_user_queries;
         static DBStorage()
         {
